@@ -8,6 +8,8 @@ way to get it back — or to send it to a friend. This fixes that.
 
 > ⚠️ **Not affiliated with NVIDIA.** Independent tool, MIT licensed.
 
+![NvFilterStudio](docs/images/screenshot.png)
+
 ## What it does
 
 - 🔍 **Inspect** every filter slot for every game, with real values

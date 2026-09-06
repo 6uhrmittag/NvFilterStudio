@@ -1,13 +1,8 @@
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace NvFilterStudio.App;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
+/// <summary>Application entry point.</summary>
 public partial class App : Application
 {
 }
-

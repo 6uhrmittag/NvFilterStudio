@@ -4,7 +4,15 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- InvariantGlobalization is deliberately NOT set. It looks like a free
+         win for a small app, but WPF needs real culture data: XmlLanguage
+         cannot resolve a specific culture for "en-us" without it, and the
+         window dies on its first layout pass with
+         "Cannot find non-neutral culture related to 'en-us'". The failure only
+         appears at runtime, so the build stays green while the shipped .exe
+         does not start. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
 
     <!-- The store encoding is unforgiving and its failures are silent, so the
          build is strict: warnings are errors and analyzers run at the highest

@@ -1,23 +1,15 @@
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using NvFilterStudio.App.ViewModels;
 
 namespace NvFilterStudio.App;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
+/// <summary>The application's only window.</summary>
 public partial class MainWindow : Window
 {
+    /// <summary>Creates the window and binds it to a fresh view model.</summary>
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = new MainViewModel();
     }
 }
