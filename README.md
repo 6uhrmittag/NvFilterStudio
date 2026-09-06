@@ -1,5 +1,8 @@
 # ✿ NvFilterStudio
 
+[![CI](https://github.com/6uhrmittag/NvFilterStudio/actions/workflows/ci.yml/badge.svg)](https://github.com/6uhrmittag/NvFilterStudio/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-FFB7C5.svg)](LICENSE)
+
 Back up, edit and share your **NVIDIA game filters**.
 
 The NVIDIA App has no export or import for game filter (Freestyle) presets, and
@@ -94,7 +97,7 @@ dotnet build -c Release
 
 ## Contributing
 
-Most wanted: **filter definitions**. Only four shaders have their sliders mapped
+See [CONTRIBUTING.md](CONTRIBUTING.md). Most wanted: **filter definitions**. Only four shaders have their sliders mapped
 to friendly names (Brightness/Contrast, Color, Details, Color Blind Mode). The
 rest work fine but show `control 0`, `control 1`. Mapping one is a small,
 self-contained contribution — see `docs/FORMAT.md`.

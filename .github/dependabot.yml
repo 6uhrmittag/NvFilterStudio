@@ -1,0 +1,25 @@
+version: 2
+
+updates:
+  # Actions drift silently: a pinned v4 kept working but was forced off
+  # deprecated Node 20 by the runners. This surfaces that as a PR instead.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"
+
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "deps"
+    groups:
+      # Test packages move together and are low risk; one PR rather than four.
+      testing:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "coverlet.*"
