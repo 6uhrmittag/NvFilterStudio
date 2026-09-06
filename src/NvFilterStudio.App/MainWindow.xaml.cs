@@ -27,6 +27,8 @@ public partial class MainWindow : Window
         };
 
         DataContext = _model;
+
+        WindowPlacement.Restore(this);
     }
 
     /// <summary>
@@ -50,6 +52,13 @@ public partial class MainWindow : Window
         if (_model.HasUnsavedChanges && !ShouldClose())
         {
             e.Cancel = true;
+        }
+
+        // Only once the close is actually going ahead, so a cancelled close
+        // does not overwrite the remembered geometry with a transient state.
+        if (!e.Cancel)
+        {
+            WindowPlacement.Save(this);
         }
 
         base.OnClosing(e);

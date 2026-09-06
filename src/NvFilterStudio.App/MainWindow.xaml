@@ -10,6 +10,14 @@
         FontFamily="{StaticResource UiFont}"
         WindowStartupLocation="CenterScreen">
 
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding ApplyCommand}" />
+        <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ReloadCommand}" />
+        <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding ExportFileCommand}" />
+        <KeyBinding Key="C" Modifiers="Ctrl+Shift" Command="{Binding CopyShareCodeCommand}" />
+        <KeyBinding Key="V" Modifiers="Ctrl+Shift" Command="{Binding PasteShareCodeCommand}" />
+    </Window.InputBindings>
+
     <Window.Resources>
         <vm:ZeroToVisibleConverter x:Key="EmptyToVisible" />
         <vm:TextToVisibleConverter x:Key="TextToVisible" />
@@ -40,6 +48,7 @@
         <Button HorizontalAlignment="Right" VerticalAlignment="Center"
                 Style="{StaticResource TinyButton}"
                 Content="{Binding ThemeGlyph}" FontSize="14"
+                AutomationProperties.Name="Switch between light and dark"
                 Command="{Binding ToggleThemeCommand}"
                 ToolTip="Switch between light and dark" />
         </Grid>
@@ -75,6 +84,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button Content="↻" Style="{StaticResource TinyButton}" Margin="10,0,0,0"
+                            AutomationProperties.Name="Re-read filters from NVIDIA"
                             Command="{Binding ReloadCommand}" ToolTip="Re-read from NVIDIA" />
                 </StackPanel>
 
@@ -181,11 +191,13 @@
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                                 <Button Content="↑" Style="{StaticResource TinyButton}"
                                                         ToolTip="Apply earlier in the stack"
+                                                        AutomationProperties.Name="Move filter earlier in the stack"
                                                         Command="{Binding DataContext.MoveUpCommand,
                                                                   RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}" />
                                                 <Button Content="↓" Style="{StaticResource TinyButton}" Margin="6,0,0,0"
                                                         ToolTip="Apply later in the stack"
+                                                        AutomationProperties.Name="Move filter later in the stack"
                                                         Command="{Binding DataContext.MoveDownCommand,
                                                                   RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}" />
@@ -196,6 +208,7 @@
                                                         CommandParameter="{Binding}" />
                                                 <Button Content="✕" Style="{StaticResource TinyButton}" Margin="6,0,0,0"
                                                         ToolTip="Remove from this slot"
+                                                        AutomationProperties.Name="Remove filter from this slot"
                                                         Command="{Binding DataContext.RemoveFilterCommand,
                                                                   RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}" />
@@ -222,12 +235,14 @@
                                                         </StackPanel>
 
                                                         <Slider Grid.Column="1" Style="{StaticResource KawaiiSlider}"
+                                                                AutomationProperties.Name="{Binding Name}"
                                                                 Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                                                                 SmallChange="{Binding Step}" LargeChange="{Binding Step}"
                                                                 Value="{Binding Value, Mode=TwoWay}"
                                                                 VerticalAlignment="Center" Margin="6,0" />
 
                                                         <TextBox Grid.Column="2" Style="{StaticResource ValueBox}"
+                                                                 AutomationProperties.Name="{Binding Name}"
                                                                  Text="{Binding ValueText, Mode=TwoWay,
                                                                         UpdateSourceTrigger=LostFocus}"
                                                                  VerticalAlignment="Center" />
@@ -275,6 +290,7 @@
             <Grid>
                 <StackPanel Orientation="Horizontal">
                     <Button Content="♡ Copy share code" Style="{StaticResource SoftButton}"
+                            ToolTip="Copy this slot as a share code (Ctrl+Shift+C)"
                             Command="{Binding CopyShareCodeCommand}" />
                     <Button Content="Paste" Style="{StaticResource SoftButton}" Margin="8,0,0,0"
                             Command="{Binding PasteShareCodeCommand}" />
@@ -285,7 +301,8 @@
                 </StackPanel>
 
                 <Button HorizontalAlignment="Right" Style="{StaticResource PrimaryButton}"
-                        Content="Apply to NVIDIA ✿" Command="{Binding ApplyCommand}" />
+                        Content="Apply to NVIDIA ✿" Command="{Binding ApplyCommand}"
+                        ToolTip="Write these filters back to NVIDIA (Ctrl+S)" />
             </Grid>
 
             <StackPanel Orientation="Horizontal" Margin="4,10,0,0">
