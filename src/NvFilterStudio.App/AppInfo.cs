@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reflection;
 
 namespace NvFilterStudio.App;
@@ -32,7 +31,11 @@ public static class AppInfo
             return informational;
         }
 
-        return FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion ?? "0.0.0";
+        // Deliberately not FileVersionInfo.GetVersionInfo(assembly.Location):
+        // Location is an empty string inside a single-file app, which is
+        // exactly the build people download. It would have failed only in the
+        // published exe.
+        return assembly.GetName().Version?.ToString() ?? "0.0.0";
     }
 
     /// <summary>Version without any build metadata, for display.</summary>
