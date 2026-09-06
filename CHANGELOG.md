@@ -15,6 +15,17 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
   `Ctrl+Shift+C` / `Ctrl+Shift+V` for share codes
 - Community health files: issue forms, pull request template, code of conduct,
   security policy
+- CodeQL analysis, weekly and on every pull request
+
+### Fixed
+
+- `ToRaw` guarded a division with `uiSpan == 0`. Double equality misses the case
+  that matters: a span of 1e-300 is not zero but still yields infinity
+- Log reassembly leaked its partial-fragment buffer when a log ended
+  mid-fragment, which is the normal state of a live log being appended to
+- The PowerShell reference tool identified a preset record partly by size
+  (`> 1000` bytes), which would skip a legitimately small document — a fresh
+  install with one filter in one slot
 
 ## [0.1.0] — 2026-09-06
 
