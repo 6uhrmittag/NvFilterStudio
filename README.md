@@ -26,8 +26,17 @@ way to get it back — or to send it to a friend. This fixes that.
 ## Getting started
 
 Download `NvFilterStudio.exe` from the
-[latest release](https://github.com/6uhrmittag/NvFilterStudio/releases)
-and run it. No installer, no dependencies.
+[latest release](https://github.com/6uhrmittag/NvFilterStudio/releases/latest)
+and run it. No installer, nothing to configure, and .NET is bundled — which is
+why it is around 60 MB.
+
+> **Windows will warn you the first time.** The download is not code-signed, so
+> SmartScreen shows "Windows protected your PC". Choose **More info → Run
+> anyway**. Signing needs a paid certificate; until then you can build it
+> yourself with `dotnet build` and see exactly what you are running.
+
+It follows your Windows light/dark setting, and the ☾ button in the corner
+switches manually.
 
 ### Before you can apply changes
 
