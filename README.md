@@ -21,7 +21,7 @@ way to get it back — or to send it to a friend. This fixes that.
 ## Getting started
 
 Download `NvFilterStudio.exe` from the
-[latest release](https://github.com/idontlikephonecalls/NvFilterStudio/releases)
+[latest release](https://github.com/6uhrmittag/NvFilterStudio/releases)
 and run it. No installer, no dependencies.
 
 ### Before you can apply changes

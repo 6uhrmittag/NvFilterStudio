@@ -24,10 +24,10 @@
 
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
-    <Authors>idontlikephonecalls</Authors>
+    <Authors>6uhrmittag</Authors>
     <Product>NvFilterStudio</Product>
-    <Copyright>Copyright (c) 2026 idontlikephonecalls</Copyright>
-    <RepositoryUrl>https://github.com/idontlikephonecalls/NvFilterStudio</RepositoryUrl>
+    <Copyright>Copyright (c) 2026 6uhrmittag</Copyright>
+    <RepositoryUrl>https://github.com/6uhrmittag/NvFilterStudio</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
 
