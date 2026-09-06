@@ -7,9 +7,10 @@
     <AssemblyName>NvFilterStudio</AssemblyName>
     <RootNamespace>NvFilterStudio.App</RootNamespace>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationIcon>Assets/app.ico</ApplicationIcon>
     <!-- XAML codegen produces members this analyzer dislikes; the rest of the
-         strict settings from Directory.Build.props still apply. -->
-    <!-- CA1822: bindable view-model properties are instance members by
+         strict settings from Directory.Build.props still apply.
+         CA1822: bindable view-model properties are instance members by
          convention even when they read nothing. CA1812: XAML instantiates
          converters and windows reflectively. -->
     <NoWarn>$(NoWarn);CA1707;CA1812;CA1822</NoWarn>
@@ -17,6 +18,12 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Resource, not Content: the window icon must live inside the
+         single-file executable, not beside it. -->
+    <Resource Include="Assets/app.ico" />
   </ItemGroup>
 
   <ItemGroup>

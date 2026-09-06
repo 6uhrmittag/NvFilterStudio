@@ -79,11 +79,44 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>Whether the read succeeded.</summary>
     public bool IsLoaded => _document is not null;
 
+    /// <summary>
+    /// Build version, shown in the header so a screenshot identifies its build.
+    /// </summary>
+    public string DisplayVersion => $"v{AppInfo.ShortVersion}";
+
+    /// <summary>
+    /// Asks the user to confirm throwing away unsaved edits. Set by the view.
+    /// </summary>
+    /// <remarks>
+    /// A callback rather than a direct <c>MessageBox</c> call so the decision
+    /// stays in the view model, where it can be tested, while the view owns how
+    /// the question is presented.
+    /// </remarks>
+    public Func<string, bool>? ConfirmDiscard { get; set; }
+
     // ---------------------------------------------------------------- loading
 
-    /// <summary>Re-reads the store, discarding unsaved edits.</summary>
+    /// <summary>
+    /// Re-reads the store, asking first if that would discard edits.
+    /// </summary>
     [RelayCommand]
     public void Reload()
+    {
+        // Re-reading replaces the whole document, so any edit not yet applied
+        // is gone. Editing and then reloading is an easy accident, and losing a
+        // hand-tuned profile is the exact failure this tool exists to prevent.
+        if (HasUnsavedChanges &&
+            ConfirmDiscard?.Invoke(
+                "Re-reading from NVIDIA will discard your unapplied changes.\n\nDiscard them?") == false)
+        {
+            return;
+        }
+
+        ReloadWithoutAsking();
+    }
+
+    /// <summary>Re-reads the store unconditionally.</summary>
+    private void ReloadWithoutAsking()
     {
         try
         {
@@ -194,10 +227,42 @@ public sealed partial class MainViewModel : ObservableObject
         FilterToAdd = AddableFilters.FirstOrDefault();
     }
 
+    /// <summary>Glyph for the theme toggle: shows what it will switch to.</summary>
+    [ObservableProperty]
+    private string _themeGlyph = "☽";
+
+    /// <summary>Flips between the light and dark palettes.</summary>
+    [RelayCommand]
+    private void ToggleTheme() =>
+        ThemeGlyph = Themes.ThemeManager.Toggle() == Themes.AppTheme.Dark ? "☀" : "☽";
+
     private void MarkDirty()
     {
         HasUnsavedChanges = true;
         Status = "Edited — not applied yet.";
+    }
+
+    /// <summary>
+    /// Applies pending edits on the way out, for the close prompt.
+    /// </summary>
+    /// <returns>
+    /// <see langword="false"/> when the write could not happen, so the caller
+    /// can keep the window open rather than closing over unsaved work.
+    /// </returns>
+    public bool TryApplyBeforeClosing()
+    {
+        if (!HasUnsavedChanges)
+        {
+            return true;
+        }
+
+        if (!CanApply())
+        {
+            return false;
+        }
+
+        Apply();
+        return !HasUnsavedChanges;
     }
 
     // --------------------------------------------------------------- editing
@@ -266,10 +331,15 @@ public sealed partial class MainViewModel : ObservableObject
 
         try
         {
+            string added = FilterToAdd.DisplayName;
             SelectedSlot.Slot.AddFilter(skeleton);
             RebuildFilters();
             MarkDirty();
-            Status = $"Added {FilterNames.ForShader(skeleton["id"]?.GetValue<string>() ?? string.Empty)} ♡";
+
+            // FilterNames keys on a shader file name. Passing skeleton["id"],
+            // which is a full DriverStore path, missed every time and printed
+            // the raw path back at the user.
+            Status = $"Added {added} ♡";
         }
         catch (InvalidFilterStackException ex)
         {
@@ -298,8 +368,9 @@ public sealed partial class MainViewModel : ObservableObject
             Status = $"Applied ♡  backup saved to {result.BackupDirectory}";
 
             // The write consumed this snapshot's sequence and version, so a
-            // fresh read is needed before another write.
-            Reload();
+            // fresh read is needed before another write. No prompt here: the
+            // edits were just saved, so there is nothing to discard.
+            ReloadWithoutAsking();
         }
         catch (Exception ex) when (ex is StoreWriteBlockedException
                                       or InvalidDataException

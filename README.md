@@ -11,7 +11,9 @@ way to get it back — or to send it to a friend. This fixes that.
 
 > ⚠️ **Not affiliated with NVIDIA.** Independent tool, MIT licensed.
 
-![NvFilterStudio](docs/images/screenshot.png)
+| Light | Dark |
+|---|---|
+| ![NvFilterStudio, light theme](docs/images/screenshot.png) | ![NvFilterStudio, dark theme](docs/images/screenshot-dark.png) |
 
 ## What it does
 

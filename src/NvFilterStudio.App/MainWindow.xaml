@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:NvFilterStudio.App.ViewModels"
         Title="NvFilterStudio"
+        Icon="Assets/app.ico"
         Width="900" Height="740"
         MinWidth="660" MinHeight="540"
-        Background="{StaticResource CanvasBrush}"
+        Background="{DynamicResource CanvasBrush}"
         FontFamily="{StaticResource UiFont}"
         WindowStartupLocation="CenterScreen">
 
@@ -26,17 +27,26 @@
         </Grid.RowDefinitions>
 
         <!-- header -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4,0,0,16">
-            <TextBlock Text="✿" FontSize="22" Foreground="{StaticResource BlushBrush}"
+        <Grid Grid.Row="0" Margin="4,0,0,16">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="✿" FontSize="22" Foreground="{DynamicResource BlushBrush}"
                        VerticalAlignment="Center" Margin="0,0,10,0" />
             <TextBlock Text="NvFilterStudio" Style="{StaticResource TitleText}" VerticalAlignment="Center" />
             <TextBlock Text="inspect · edit · share" Style="{StaticResource HintText}"
                        VerticalAlignment="Bottom" Margin="12,0,0,4" />
+            <TextBlock Text="{Binding DisplayVersion}" Style="{StaticResource HintText}"
+                       VerticalAlignment="Bottom" Margin="10,0,0,4" Opacity="0.7" />
         </StackPanel>
+        <Button HorizontalAlignment="Right" VerticalAlignment="Center"
+                Style="{StaticResource TinyButton}"
+                Content="{Binding ThemeGlyph}" FontSize="14"
+                Command="{Binding ToggleThemeCommand}"
+                ToolTip="Switch between light and dark" />
+        </Grid>
 
         <!-- read error -->
         <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,0,0,14"
-                Background="{StaticResource WarnBrush}" BorderBrush="{StaticResource WarnEdgeBrush}"
+                Background="{DynamicResource WarnBrush}" BorderBrush="{DynamicResource WarnEdgeBrush}"
                 Visibility="{Binding LoadError, Converter={StaticResource TextToVisible}}">
             <StackPanel>
                 <TextBlock Text="Couldn't read your filters" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
@@ -49,16 +59,28 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Game" Style="{StaticResource BodyText}" VerticalAlignment="Center"
-                               Width="52" Foreground="{StaticResource InkSoftBrush}" />
-                    <ComboBox ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame}"
-                              DisplayMemberPath="DisplayName" MinWidth="280" Padding="8,5" />
+                               Width="52" Foreground="{DynamicResource InkSoftBrush}" />
+                    <!-- An explicit ItemTemplate rather than DisplayMemberPath: the
+                         custom ComboBox template renders the selection through
+                         SelectionBoxItemTemplate, which DisplayMemberPath does not
+                         populate, so the box fell back to ToString(). -->
+                    <ComboBox Style="{StaticResource SoftCombo}"
+                              ItemContainerStyle="{StaticResource SoftComboItem}"
+                              ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame}"
+                              MinWidth="280">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <Button Content="↻" Style="{StaticResource TinyButton}" Margin="10,0,0,0"
                             Command="{Binding ReloadCommand}" ToolTip="Re-read from NVIDIA" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
                     <TextBlock Text="Slot" Style="{StaticResource BodyText}" VerticalAlignment="Top"
-                               Width="52" Margin="0,8,0,0" Foreground="{StaticResource InkSoftBrush}" />
+                               Width="52" Margin="0,8,0,0" Foreground="{DynamicResource InkSoftBrush}" />
                     <ListBox ItemsSource="{Binding Slots}" SelectedItem="{Binding SelectedSlot}"
                              Background="Transparent" BorderThickness="0">
                         <ListBox.ItemsPanel>
@@ -72,22 +94,28 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListBoxItem">
                                             <Border x:Name="Chip"
-                                                    Background="{StaticResource SunkenBrush}"
+                                                    Background="{DynamicResource SunkenBrush}"
                                                     CornerRadius="{StaticResource PillRadius}"
-                                                    BorderBrush="{StaticResource EdgeBrush}"
-                                                    BorderThickness="1" Padding="18,7">
+                                                    BorderBrush="{DynamicResource EdgeBrush}"
+                                                    BorderThickness="1" Padding="18,7"
+                                                    TextElement.Foreground="{DynamicResource InkBrush}">
                                                 <ContentPresenter />
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsSelected" Value="True">
                                                     <Setter TargetName="Chip" Property="Background"
-                                                            Value="{StaticResource BlushBrush}" />
+                                                            Value="{DynamicResource BlushBrush}" />
                                                     <Setter TargetName="Chip" Property="BorderBrush"
-                                                            Value="{StaticResource BlushBrush}" />
+                                                            Value="{DynamicResource BlushBrush}" />
+                                                    <!-- This text sits on the pink accent, so it needs
+                                                         the on-accent ink. Without it the summary line
+                                                         all but vanishes in dark mode. -->
+                                                    <Setter TargetName="Chip" Property="TextElement.Foreground"
+                                                            Value="{DynamicResource InkOnAccentBrush}" />
                                                 </Trigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="Chip" Property="BorderBrush"
-                                                            Value="{StaticResource BlushBrush}" />
+                                                            Value="{DynamicResource BlushBrush}" />
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -97,11 +125,15 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:SlotOption}">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Label}" Style="{StaticResource BodyText}"
-                                               HorizontalAlignment="Center" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding Summary}" Style="{StaticResource HintText}"
-                                               HorizontalAlignment="Center" />
+                                <!-- Foreground is deliberately not set here. The chip template
+                                     supplies it, switching to on-accent ink when selected, and an
+                                     explicit Foreground on the TextBlock would win over that and
+                                     leave the label unreadable on the pink. -->
+                                <StackPanel TextElement.FontFamily="{StaticResource UiFont}">
+                                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Center"
+                                               FontSize="{StaticResource BodySize}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Summary}" HorizontalAlignment="Center"
+                                               FontSize="{StaticResource SmallSize}" Opacity="0.75" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -117,14 +149,14 @@
                     <ItemsControl ItemsSource="{Binding Filters}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:FilterViewModel}">
-                                <Border Background="{StaticResource CardBrush}"
+                                <Border Background="{DynamicResource CardBrush}"
                                         CornerRadius="{StaticResource ControlRadius}"
-                                        BorderBrush="{StaticResource EdgeBrush}" BorderThickness="1"
+                                        BorderBrush="{DynamicResource EdgeBrush}" BorderThickness="1"
                                         Padding="14,12" Margin="4,4,4,10">
                                     <StackPanel>
                                         <Grid>
                                             <StackPanel Orientation="Horizontal">
-                                                <Border Background="{StaticResource LavenderBrush}"
+                                                <Border Background="{DynamicResource LavenderBrush}"
                                                         CornerRadius="{StaticResource PillRadius}"
                                                         Padding="10,2" VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding Order}" Style="{StaticResource BodyText}"
@@ -135,14 +167,14 @@
                                                            VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding Shader}" Style="{StaticResource HintText}"
                                                            Margin="8,0,0,0" VerticalAlignment="Center" />
-                                                <Border Background="{StaticResource ButterBrush}"
+                                                <Border Background="{DynamicResource ButterBrush}"
                                                         CornerRadius="{StaticResource PillRadius}"
                                                         Padding="8,2" Margin="8,0,0,0" VerticalAlignment="Center"
                                                         ToolTip="These sliders aren't named yet. The values are still correct."
                                                         Visibility="{Binding HasUnmappedControls,
                                                                      Converter={StaticResource TrueToVisible}}">
                                                     <TextBlock Text="unnamed sliders" Style="{StaticResource HintText}"
-                                                               Foreground="{StaticResource InkBrush}" />
+                                                               Foreground="{DynamicResource InkBrush}" />
                                                 </Border>
                                             </StackPanel>
 
@@ -214,8 +246,16 @@
                                Visibility="{Binding Filters.Count, Converter={StaticResource EmptyToVisible}}" />
 
                     <StackPanel Orientation="Horizontal" Margin="4,6,4,4">
-                        <ComboBox ItemsSource="{Binding AddableFilters}" SelectedItem="{Binding FilterToAdd}"
-                                  DisplayMemberPath="DisplayName" MinWidth="210" Padding="8,5" />
+                        <ComboBox Style="{StaticResource SoftCombo}"
+                                  ItemContainerStyle="{StaticResource SoftComboItem}"
+                                  ItemsSource="{Binding AddableFilters}" SelectedItem="{Binding FilterToAdd}"
+                                  MinWidth="210">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayName}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         <Button Content="＋ Add filter" Style="{StaticResource SoftButton}" Margin="8,0,0,0"
                                 Command="{Binding AddFilterCommand}" />
                     </StackPanel>
@@ -226,10 +266,10 @@
         <!-- footer -->
         <StackPanel Grid.Row="4" Margin="0,14,0,0">
             <Border Style="{StaticResource CardStyle}" Padding="14,11" Margin="0,0,0,10"
-                    Background="{StaticResource WarnBrush}" BorderBrush="{StaticResource WarnEdgeBrush}"
+                    Background="{DynamicResource WarnBrush}" BorderBrush="{DynamicResource WarnEdgeBrush}"
                     Visibility="{Binding CanWrite, Converter={StaticResource FalseToVisible}}">
                 <TextBlock Text="{Binding BlockedHint}" Style="{StaticResource HintText}"
-                           Foreground="{StaticResource InkBrush}" />
+                           Foreground="{DynamicResource InkBrush}" />
             </Border>
 
             <Grid>
@@ -248,7 +288,17 @@
                         Content="Apply to NVIDIA ✿" Command="{Binding ApplyCommand}" />
             </Grid>
 
-            <TextBlock Text="{Binding Status}" Style="{StaticResource HintText}" Margin="4,10,0,0" />
+            <StackPanel Orientation="Horizontal" Margin="4,10,0,0">
+                <Border Background="{DynamicResource ButterBrush}"
+                        CornerRadius="{StaticResource PillRadius}"
+                        Padding="10,2" Margin="0,0,10,0" VerticalAlignment="Center"
+                        Visibility="{Binding HasUnsavedChanges, Converter={StaticResource TrueToVisible}}">
+                    <TextBlock Text="unsaved changes" Style="{StaticResource HintText}"
+                               Foreground="{DynamicResource InkBrush}" FontWeight="SemiBold" />
+                </Border>
+                <TextBlock Text="{Binding Status}" Style="{StaticResource HintText}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
