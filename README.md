@@ -135,5 +135,3 @@ the store. Also: [Code of Conduct](CODE_OF_CONDUCT.md) ·
 MIT. Not affiliated with, endorsed by, or connected to NVIDIA Corporation.
 "NVIDIA" and "Freestyle" are their trademarks and are used here only to say what
 this tool works with.
-
-MIT

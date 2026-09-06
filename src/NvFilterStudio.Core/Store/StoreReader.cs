@@ -116,6 +116,11 @@ public sealed class StoreReader(StoreLocator locator)
         {
             foreach (BatchEntry entry in WriteBatch.ReadEntries(batch))
             {
+                // Identity comes from the key and the encoding preamble, never
+                // from the value's size. A size threshold would skip a
+                // legitimately small document - a fresh install with one filter
+                // in one slot - and the PowerShell reference tool has exactly
+                // that bug.
                 if (entry.Type != BatchEntryType.Value ||
                     !IndexedDbKey.IsFilterPresetsKey(entry.Key.Span) ||
                     !StoreValueCodec.LooksLikePresetValue(entry.Value.Span))
