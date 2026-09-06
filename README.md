@@ -83,7 +83,7 @@ assumed — is documented in **[docs/FORMAT.md](docs/FORMAT.md)**.
 ## Building
 
 ```powershell
-dotnet test                 # 71 tests, no NVIDIA install needed
+dotnet test                 # 101 tests, no NVIDIA install needed
 dotnet run --project tools/NvFilterStudio.Cli -- show
 dotnet build -c Release
 ```
