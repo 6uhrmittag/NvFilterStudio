@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build:
+    # WPF needs Windows. The Core library and its tests are plain net10.0 and
+    # would run anywhere, but one runner keeps the matrix honest.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        # Warnings are errors and analyzers run in-build, so this step is also
+        # the lint gate.
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Verify formatting
+        run: dotnet format --verify-no-changes --no-restore
+
+      - name: Test
+        # Fixtures are synthetic, so the suite needs no NVIDIA install and
+        # nothing about the runner's hardware.
+        run: >
+          dotnet test --configuration Release --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ${{ github.workspace }}/artifacts/test-results
+          --collect:"XPlat Code Coverage"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+          if-no-files-found: warn
+
+      - name: Publish single-file executable
+        # No trimming: WPF does not trim cleanly, and a broken published build
+        # is worse than a larger one.
+        run: >
+          dotnet publish src/NvFilterStudio.App
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=embedded
+          --output ${{ github.workspace }}/artifacts/publish
+
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: NvFilterStudio-win-x64
+          path: artifacts/publish/NvFilterStudio.App.exe
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download application
+        uses: actions/download-artifact@v4
+        with:
+          name: NvFilterStudio-win-x64
+          path: dist
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/NvFilterStudio.App.exe
+          generate_release_notes: true

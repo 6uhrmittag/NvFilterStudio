@@ -1,0 +1,13 @@
+# Normalise on commit; check out CRLF so the tree matches .editorconfig and
+# `dotnet format --verify-no-changes` agrees on Windows and on CI runners.
+* text=auto eol=crlf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.exe binary
+
+# Never diff or normalise a captured store; these should not be committed at
+# all, but if one ever is, treat it as opaque bytes.
+*.ldb binary
+*.log binary
