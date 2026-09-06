@@ -1,0 +1,26 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- The store encoding is unforgiving and its failures are silent, so the
+         build is strict: warnings are errors and analyzers run at the highest
+         practical level. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <Authors>idontlikephonecalls</Authors>
+    <Product>NvFilterStudio</Product>
+    <Copyright>Copyright (c) 2026 idontlikephonecalls</Copyright>
+    <RepositoryUrl>https://github.com/idontlikephonecalls/NvFilterStudio</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+</Project>

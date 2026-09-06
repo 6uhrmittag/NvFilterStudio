@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NvFilterStudio.App/NvFilterStudio.App.csproj" />
+    <Project Path="src/NvFilterStudio.Core/NvFilterStudio.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NvFilterStudio.Core.Tests/NvFilterStudio.Core.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/NvFilterStudio.Cli/NvFilterStudio.Cli.csproj" />
+  </Folder>
+</Solution>
