@@ -33,6 +33,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: csharp
+          config-file: ./.github/codeql/codeql-config.yml
           queries: security-and-quality
 
       - name: Build

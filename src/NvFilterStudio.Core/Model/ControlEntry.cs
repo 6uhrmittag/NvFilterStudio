@@ -82,7 +82,11 @@ public sealed class ControlEntry(JsonObject node)
     public double ToRaw(double uiValue)
     {
         double uiSpan = UiMaximum - UiMinimum;
-        if (uiSpan == 0)
+
+        // Guarding a division, so a near-zero span matters as much as an exact
+        // zero: a span of 1e-300 would not equal 0 but would still produce
+        // infinity. Comparing doubles with == would miss that.
+        if (Math.Abs(uiSpan) < 1e-9)
         {
             return RawMinimum;
         }

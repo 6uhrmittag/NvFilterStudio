@@ -1,0 +1,14 @@
+name: NvFilterStudio
+
+paths-ignore:
+  # XAML code generation, not authored here. It produced the only two findings
+  # that were not real, and they cannot be fixed in this repository.
+  - '**/obj/**'
+  - '**/bin/**'
+
+query-filters:
+  # Path.Combine with a rooted second argument is intentional throughout:
+  # store locations come from Environment.SpecialFolder and are combined with
+  # known relative paths, never with user input.
+  - exclude:
+      id: cs/path-combine

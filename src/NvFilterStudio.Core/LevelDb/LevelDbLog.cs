@@ -127,40 +127,53 @@ public static class LevelDbLog
     public static IReadOnlyList<byte[]> ReadBatches(ReadOnlyMemory<byte> data)
     {
         var batches = new List<byte[]>();
+
+        // A log that ends mid-fragment leaves a partial buffer behind, which is
+        // normal for a live log being appended to. Disposal therefore happens
+        // once at the end rather than only on the Last branch.
         MemoryStream? pending = null;
-
-        foreach (LogRecord record in ReadRecords(data))
+        try
         {
-            switch (record.Type)
+            foreach (LogRecord record in ReadRecords(data))
             {
-                case LogRecordType.Full:
-                    batches.Add(record.Payload.ToArray());
-                    pending = null;
-                    break;
-
-                case LogRecordType.First:
-                    pending = new MemoryStream();
-                    pending.Write(record.Payload.Span);
-                    break;
-
-                case LogRecordType.Middle:
-                    pending?.Write(record.Payload.Span);
-                    break;
-
-                case LogRecordType.Last:
-                    if (pending is not null)
-                    {
-                        pending.Write(record.Payload.Span);
-                        batches.Add(pending.ToArray());
+                switch (record.Type)
+                {
+                    case LogRecordType.Full:
+                        batches.Add(record.Payload.ToArray());
+                        pending?.Dispose();
                         pending = null;
-                    }
+                        break;
 
-                    break;
+                    case LogRecordType.First:
+                        pending?.Dispose();
+                        pending = new MemoryStream();
+                        pending.Write(record.Payload.Span);
+                        break;
 
-                case LogRecordType.Zero:
-                default:
-                    break;
+                    case LogRecordType.Middle:
+                        pending?.Write(record.Payload.Span);
+                        break;
+
+                    case LogRecordType.Last:
+                        if (pending is not null)
+                        {
+                            pending.Write(record.Payload.Span);
+                            batches.Add(pending.ToArray());
+                            pending.Dispose();
+                            pending = null;
+                        }
+
+                        break;
+
+                    case LogRecordType.Zero:
+                    default:
+                        break;
+                }
             }
+        }
+        finally
+        {
+            pending?.Dispose();
         }
 
         return batches;
