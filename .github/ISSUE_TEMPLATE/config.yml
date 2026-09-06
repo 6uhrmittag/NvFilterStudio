@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How the NVIDIA filter store works
+    url: https://github.com/6uhrmittag/NvFilterStudio/blob/master/docs/FORMAT.md
+    about: Store layout, binary encoding, and what is proven versus assumed.
+  - name: Contributing guide
+    url: https://github.com/6uhrmittag/NvFilterStudio/blob/master/CONTRIBUTING.md
+    about: How to build, and the highest-value thing you can help with.

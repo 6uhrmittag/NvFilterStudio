@@ -1,0 +1,72 @@
+name: Filter slider mapping
+description: Tell us what a filter's unnamed sliders actually do
+title: "Map <Filter>.fx sliders"
+labels: [enhancement, good first issue]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This is the most useful contribution to the project, and it needs no code.**
+
+        Six shaders still show `control 0`, `control 1` instead of real names.
+        They read and write correctly — only the labels are missing.
+
+        It has to be observed rather than derived: the name NVIDIA stores follows
+        the App's UI language, and it is not even reliably *one* language. On a
+        German install `Adjustments.fx` control 2 is labelled `Hoogtepunten`,
+        which is Dutch.
+
+  - type: dropdown
+    id: shader
+    attributes:
+      label: Which filter
+      options:
+        - Letterbox.fx
+        - NightMode.fx
+        - SpecialFX.fx
+        - Watercolor.fx
+        - Painterly.fx
+        - Splitscreen.fx
+        - other (say which below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: mapping
+    attributes:
+      label: The mapping
+      description: |
+        In the NVIDIA overlay, add the filter to a spare slot and set each
+        slider to a different memorable value. Close the overlay — that is what
+        saves it. Then run:
+
+        ```
+        dotnet run --project tools/NvFilterStudio.Cli -- show
+        ```
+
+        and match each `id=` to the slider it belongs to.
+      value: |
+        | control id | NVIDIA App label (English) | notes |
+        |---|---|---|
+        | 0 |  |  |
+        | 1 |  |  |
+        | 2 |  |  |
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: Your NVIDIA App UI language
+      description: So we know which language the English names were translated from.
+      placeholder: English
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        Opening a PR yourself is very welcome — the table lives in
+        `FilterNames.ControlsByShader` in
+        `src/NvFilterStudio.Core/Share/ExportDocument.cs`. But an issue with the
+        mapping is genuinely just as helpful.

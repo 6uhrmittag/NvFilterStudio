@@ -1,0 +1,26 @@
+name: Idea
+description: Something the app should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The situation, rather than the solution. It often has a simpler answer than expected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you had in mind
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        Worth knowing before you write: this reads and writes an undocumented
+        binary format. [`docs/FORMAT.md`](../blob/master/docs/FORMAT.md) records
+        what is actually proven, with evidence, and separately what is only
+        assumed — some ideas are blocked on those unknowns rather than on effort.

@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/6uhrmittag/NvFilterStudio/actions/workflows/ci.yml/badge.svg)](https://github.com/6uhrmittag/NvFilterStudio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-FFB7C5.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/6uhrmittag/NvFilterStudio?include_prereleases&color=C8B6E2)](https://github.com/6uhrmittag/NvFilterStudio/releases/latest)
 
 Back up, edit and share your **NVIDIA game filters**.
 
@@ -51,9 +52,20 @@ database open and anything written underneath it is discarded.
 
 The app watches for this and enables **Apply** on its own once the way is clear.
 
-?> Closing the NVIDIA App alone is not enough — the `NvContainerLocalSystem`
-service restarts the overlay within seconds. The setting toggle is what
-actually releases it.
+> Closing the NVIDIA App alone is not enough — the `NvContainerLocalSystem`
+> service restarts the overlay within seconds. The setting toggle is what
+> actually releases it.
+
+## Keyboard
+
+| | |
+|---|---|
+| `Ctrl+S` | Apply to NVIDIA |
+| `Ctrl+R` | Re-read from NVIDIA |
+| `Ctrl+E` | Export to a file |
+| `Ctrl+Shift+C` / `Ctrl+Shift+V` | Copy / paste a share code |
+
+Start with `--theme light` or `--theme dark` to override the Windows setting.
 
 ## Sharing
 
@@ -108,11 +120,20 @@ dotnet build -c Release
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Most wanted: **filter definitions**. Only four shaders have their sliders mapped
-to friendly names (Brightness/Contrast, Color, Details, Color Blind Mode). The
-rest work fine but show `control 0`, `control 1`. Mapping one is a small,
-self-contained contribution — see `docs/FORMAT.md`.
+**You do not need to write code to help.** The most useful contribution is
+telling us what a filter's unnamed sliders do — six of the ten shaders still
+show `control 0` because the mapping has to be *observed*, not derived. There is
+[an issue form for exactly that](https://github.com/6uhrmittag/NvFilterStudio/issues/new?template=filter_mapping.yml).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) to build it, and
+[docs/FORMAT.md](docs/FORMAT.md) before touching anything that reads or writes
+the store. Also: [Code of Conduct](CODE_OF_CONDUCT.md) ·
+[Security policy](SECURITY.md) · [Changelog](CHANGELOG.md).
 
 ## License
+
+MIT. Not affiliated with, endorsed by, or connected to NVIDIA Corporation.
+"NVIDIA" and "Freestyle" are their trademarks and are used here only to say what
+this tool works with.
 
 MIT
