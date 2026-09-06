@@ -23,10 +23,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
 
@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: artifacts/test-results
@@ -72,10 +72,10 @@ jobs:
           --output ${{ github.workspace }}/artifacts/publish
 
       - name: Upload application
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: NvFilterStudio-win-x64
-          path: artifacts/publish/NvFilterStudio.App.exe
+          path: artifacts/publish/NvFilterStudio.exe
           if-no-files-found: error
 
   release:
@@ -87,7 +87,7 @@ jobs:
 
     steps:
       - name: Download application
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: NvFilterStudio-win-x64
           path: dist
@@ -95,5 +95,5 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/NvFilterStudio.App.exe
+          files: dist/NvFilterStudio.exe
           generate_release_notes: true
