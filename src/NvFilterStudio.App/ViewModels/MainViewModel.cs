@@ -70,6 +70,18 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private CatalogueEntry? _filterToAdd;
 
+    /// <summary>
+    /// Whether photo-mode slots are being shown instead of game filters.
+    /// </summary>
+    /// <remarks>
+    /// The store keeps two independent sets per game. Game filters are what
+    /// almost everyone wants, so they stay the default and Ansel is a toggle
+    /// rather than a peer - visible enough to find, quiet enough not to be
+    /// picked by accident.
+    /// </remarks>
+    [ObservableProperty]
+    private bool _showPhotoMode;
+
     [ObservableProperty]
     private string _status = "Reading your filters…";
 
@@ -90,6 +102,10 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>Whether the read succeeded.</summary>
     public bool IsLoaded => _document is not null;
+
+    /// <summary>Which slot family the UI is editing.</summary>
+    private SlotGroupKind ActiveGroup =>
+        ShowPhotoMode ? SlotGroupKind.Ansel : SlotGroupKind.GameFilters;
 
     /// <summary>
     /// Build version, shown in the header so a screenshot identifies its build.
@@ -225,7 +241,7 @@ public sealed partial class MainViewModel : ObservableObject
     partial void OnSelectedGameChanged(GameProfile? value)
     {
         Slots.Clear();
-        if (value?.GetGroup(SlotGroupKind.GameFilters) is { } group)
+        if (value?.GetGroup(ActiveGroup) is { } group)
         {
             foreach (Slot slot in group.Slots.Where(s => !s.IsNoneSlot))
             {
@@ -234,6 +250,13 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         SelectedSlot = Slots.FirstOrDefault(s => s.Slot.FilterCount > 0) ?? Slots.FirstOrDefault();
+    }
+
+    partial void OnShowPhotoModeChanged(bool value)
+    {
+        // Same game, different slot family, so the slot strip is rebuilt.
+        _valueEditRecorded = false;
+        OnSelectedGameChanged(SelectedGame);
     }
 
     partial void OnSelectedSlotChanged(SlotOption? value)
@@ -398,8 +421,8 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     /// <summary>Re-finds a slot in another copy of the document.</summary>
-    private static Slot? FindSlot(FilterPresetDocument document, string exePath, int slotId) =>
-        document.GetGame(exePath)?.GetGroup(SlotGroupKind.GameFilters)?.GetSlot(slotId);
+    private Slot? FindSlot(FilterPresetDocument document, string exePath, int slotId) =>
+        document.GetGame(exePath)?.GetGroup(ActiveGroup)?.GetSlot(slotId);
 
     private void MarkDirty()
     {

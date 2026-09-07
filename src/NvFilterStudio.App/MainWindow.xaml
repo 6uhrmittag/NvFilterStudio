@@ -94,6 +94,17 @@
                     <Button Content="↷" Style="{StaticResource TinyButton}" Margin="6,0,0,0"
                             AutomationProperties.Name="Redo the last undone change"
                             Command="{Binding RedoCommand}" ToolTip="Redo (Ctrl+Y)" />
+                    <!-- A quiet toggle rather than a peer of the game picker:
+                         game filters are what almost everyone wants, and photo
+                         mode should be findable without being pickable by
+                         accident. -->
+                    <CheckBox Content="photo mode" Margin="16,0,0,0" VerticalAlignment="Center"
+                              IsChecked="{Binding ShowPhotoMode}"
+                              Foreground="{DynamicResource InkSoftBrush}"
+                              FontFamily="{StaticResource UiFont}"
+                              FontSize="{StaticResource SmallSize}"
+                              AutomationProperties.Name="Show photo mode (Ansel) slots instead of game filters"
+                              ToolTip="Show the Ansel photo-mode slots instead of the game filter slots" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
