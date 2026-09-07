@@ -113,7 +113,7 @@ assumed — is documented in **[docs/FORMAT.md](docs/FORMAT.md)**.
 ## Building
 
 ```powershell
-dotnet test                 # 131 tests, no NVIDIA install needed
+dotnet test                 # 184 tests, no NVIDIA install needed
 dotnet run --project tools/NvFilterStudio.Cli -- show
 dotnet build -c Release
 ```
@@ -127,10 +127,16 @@ dotnet build -c Release
 
 ## Contributing
 
-**You do not need to write code to help.** The most useful contribution is
-telling us what a filter's unnamed sliders do — six of the ten shaders still
-show `control 0` because the mapping has to be *observed*, not derived. There is
+**You do not need to write code to help.** All 18 filters and their 73 sliders
+are named now — but those names are **translations of German labels**, because
+the machine they were harvested from runs the NVIDIA App in German. If yours is
+in English, checking a few against what your overlay actually says is the single
+most useful thing you can do, and it needs no code. There is
 [an issue form for exactly that](https://github.com/6uhrmittag/NvFilterStudio/issues/new?template=filter_mapping.yml).
+
+Just as useful: **a filter your overlay offers that is not in
+[the table](docs/FORMAT.md)**. Those eighteen were observed on one RTX 4090 with
+one driver, and whether the set varies by GPU or driver version is unknown.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to build it, and
 [docs/FORMAT.md](docs/FORMAT.md) before touching anything that reads or writes

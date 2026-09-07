@@ -1,6 +1,6 @@
-name: Filter slider mapping
-description: Tell us what a filter's unnamed sliders actually do
-title: "Map <Filter>.fx sliders"
+name: Filter slider names
+description: Correct a filter's slider names, or report a filter we have never seen
+title: "Names: <Filter>.fx"
 labels: [enhancement, good first issue]
 body:
   - type: markdown
@@ -8,8 +8,14 @@ body:
       value: |
         **This is the most useful contribution to the project, and it needs no code.**
 
-        Six shaders still show `control 0`, `control 1` instead of real names.
-        They read and write correctly — only the labels are missing.
+        All 18 filters and their 73 sliders are mapped — but the English names are
+        **translations of German labels**, because the machine they were harvested
+        from runs the NVIDIA App in German. Nobody has checked them against an
+        English NVIDIA App.
+
+        So if yours is in English, you can settle in a minute what is currently a
+        guess. `GrimeStrength`, `EdgeDistance` and `SplitAndCompare` are guesses at
+        *Stärke Schmutzfilmeffekt*, *Randabstand* and *Teilen & Vergleichen*.
 
         It has to be observed rather than derived: the name NVIDIA stores follows
         the App's UI language, and it is not even reliably *one* language. On a
@@ -17,40 +23,67 @@ body:
         which is Dutch.
 
   - type: dropdown
+    id: kind
+    attributes:
+      label: What is this
+      options:
+        - A correction to names we already have
+        - A filter that is not in the table at all
+    validations:
+      required: true
+
+  - type: dropdown
     id: shader
     attributes:
       label: Which filter
+      description: |
+        If your overlay offers something not listed here, pick "not in this list" —
+        that is a genuinely useful finding. These eighteen were seen on one RTX
+        4090 with one driver, and nobody knows whether the set varies.
       options:
+        - Adjustments.fx
+        - BeautifyDOF.fx
+        - BlacknWhite.fx
+        - Color.fx
+        - Colorblind.fx
+        - DOF.fx
+        - Details.fx
         - Letterbox.fx
         - NightMode.fx
-        - SpecialFX.fx
-        - Watercolor.fx
+        - NvNewSharpen.fx
+        - NvTiltShift.fx
+        - NvVignette.fx
+        - OldFilm.fx
         - Painterly.fx
+        - Sharpen.fx
+        - SpecialFX.fx
         - Splitscreen.fx
-        - other (say which below)
+        - Watercolor.fx
+        - not in this list (say which below)
     validations:
       required: true
 
   - type: textarea
     id: mapping
     attributes:
-      label: The mapping
+      label: The names
       description: |
-        In the NVIDIA overlay, add the filter to a spare slot and set each
-        slider to a different memorable value. Close the overlay — that is what
-        saves it. Then run:
+        In the NVIDIA overlay, add the filter to a spare slot and set each slider
+        to a different memorable value. Close the overlay — that is what saves it.
+        Then run:
 
         ```
         dotnet run --project tools/NvFilterStudio.Cli -- show
         ```
 
-        and match each `id=` to the slider it belongs to.
+        and match each `id=` to the slider it belongs to. The current names are in
+        [docs/FORMAT.md](../blob/master/docs/FORMAT.md).
       value: |
-        | control id | NVIDIA App label (English) | notes |
-        |---|---|---|
-        | 0 |  |  |
-        | 1 |  |  |
-        | 2 |  |  |
+        | control id | NVIDIA App label (English) | currently says | notes |
+        |---|---|---|---|
+        | 0 |  |  |  |
+        | 1 |  |  |  |
+        | 2 |  |  |  |
     validations:
       required: true
 
@@ -58,15 +91,31 @@ body:
     id: language
     attributes:
       label: Your NVIDIA App UI language
-      description: So we know which language the English names were translated from.
+      description: The whole point of this form, so please do not skip it.
       placeholder: English
     validations:
       required: true
+
+  - type: input
+    id: hardware
+    attributes:
+      label: GPU and driver version
+      description: |
+        Only matters for a filter we have not seen — it would tell us whether the
+        available set depends on hardware or driver.
+      placeholder: RTX 4070, 566.36
+    validations:
+      required: false
 
   - type: markdown
     attributes:
       value: |
         Opening a PR yourself is very welcome — the table lives in
         `FilterNames.ControlsByShader` in
-        `src/NvFilterStudio.Core/Share/ExportDocument.cs`. But an issue with the
-        mapping is genuinely just as helpful.
+        `src/NvFilterStudio.Core/Share/ExportDocument.cs`, and the shipped
+        catalogue in `src/NvFilterStudio.Core/Catalogue/filter-catalogue.seed.json`
+        needs the same change, because its `displayName` values are what NVIDIA's
+        own overlay renders. But an issue is genuinely just as helpful.
+
+        Please do not attach a raw `.log` or `.ldb` — those carry your NVIDIA
+        account id. An export from **Export** is safe and has no identifiers in it.
