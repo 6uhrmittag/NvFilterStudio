@@ -36,6 +36,9 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Applying no longer throws away where you were: the selected game and slot
+  survive the re-read, and the confirmation is no longer overwritten by the
+  reload's own status a moment later (#27)
 - Screen readers no longer announce raw view-model type names before every
   filter and slider (#28). Item containers now name themselves
   `Details (Details.fx), position 1` and `Sharpen, Schärfen`
