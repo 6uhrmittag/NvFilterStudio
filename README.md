@@ -90,9 +90,14 @@ Two formats, for two different jobs:
 | **JSON file** | Backups, moving machines | ~35 KB |
 
 A share code carries only the shape of the look — which filters, in what order,
-at what values — and is rebuilt against your own machine's filter definitions. A
-JSON file carries everything, so it restores even onto a machine that has never
-used those filters.
+at what values — and is rebuilt against your own machine's filter definitions, so
+one from a stranger is safe to paste. A JSON file carries everything, so it
+restores even onto a machine that has never used those filters; it also records
+each game's install path, because importing matches on it.
+
+**Made something good?**
+[Post it in Show and tell](https://github.com/6uhrmittag/NvFilterStudio/discussions/41)
+— that thread is where share codes get traded.
 
 ## Is this safe?
 
