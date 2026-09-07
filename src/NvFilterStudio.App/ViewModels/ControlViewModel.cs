@@ -84,6 +84,22 @@ public sealed partial class ControlViewModel : ObservableObject
 
     partial void OnValueChanged(double value)
     {
+        if (_reconciling)
+        {
+            // Re-entered from the snap write-back below. The document and the
+            // undo point are already correct; only the labels need refreshing.
+            OnPropertyChanged(nameof(ValueText));
+            OnPropertyChanged(nameof(IsModified));
+            return;
+        }
+
+        // Before the write, not after. This callback is what records the undo
+        // point, and it does so by snapshotting the document — so once the new
+        // value has been written into that document the state to return to no
+        // longer exists anywhere, and undo "succeeds" while restoring the very
+        // edit it was meant to remove.
+        _onChanged();
+
         // Writing through the model keeps currentValue and currentValueArray in
         // step with currentUIValue; setting one alone leaves the record
         // internally inconsistent.
@@ -94,7 +110,7 @@ public sealed partial class ControlViewModel : ObservableObject
         // display a number the store does not hold - the exact silent mismatch
         // this project keeps running into. The slider is snapped too, but it is
         // not the only way in: typing a value and importing both land here.
-        if (!_reconciling && Math.Abs(_control.UiValue - value) > 1e-9)
+        if (Math.Abs(_control.UiValue - value) > 1e-9)
         {
             _reconciling = true;
             Value = _control.UiValue;
@@ -104,7 +120,6 @@ public sealed partial class ControlViewModel : ObservableObject
 
         OnPropertyChanged(nameof(ValueText));
         OnPropertyChanged(nameof(IsModified));
-        _onChanged();
     }
 
     /// <summary>Restores the NVIDIA default for this control.</summary>

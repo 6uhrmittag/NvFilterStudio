@@ -130,4 +130,46 @@ public class EditHistoryTests
         Assert.False(history.CanUndo);
         Assert.False(history.CanRedo);
     }
+
+    [Fact]
+    public void NextRedoDescription_NamesTheActionThatWouldBeReapplied()
+    {
+        // The caller labels the state it pushes onto the redo stack with this,
+        // so the status line can say "Redid your slider changes" rather than
+        // repeating whatever placeholder the caller invented - it used to read
+        // "Redid redo".
+        var history = new EditHistory();
+        history.Record(Snap("before", "your slider changes"));
+
+        history.Undo(Snap("after", "your slider changes"));
+
+        Assert.Equal("your slider changes", history.NextRedoDescription);
+    }
+
+    [Fact]
+    public void NextRedoDescription_IsNullWithNothingToRedo()
+    {
+        var history = new EditHistory();
+        history.Record(Snap("before"));
+
+        Assert.Null(history.NextRedoDescription);
+    }
+
+    [Fact]
+    public void UndoThenRedo_ReturnsTheDocumentToWhereItStarted()
+    {
+        // The round trip the UI depends on. A snapshot has to be recorded from
+        // the state *before* a change; recording it afterwards returns the very
+        // edit undo was meant to remove. That ordering lives in the caller, but
+        // this pins the mechanism it relies on.
+        var history = new EditHistory();
+        history.Record(Snap("before", "an edit"));
+
+        EditSnapshot? undone = history.Undo(Snap("after", "an edit"));
+        Assert.Equal("before", undone!.Json);
+
+        EditSnapshot? redone = history.Redo(Snap("before", "an edit"));
+        Assert.Equal("after", redone!.Json);
+        Assert.Equal("an edit", redone.Description);
+    }
 }

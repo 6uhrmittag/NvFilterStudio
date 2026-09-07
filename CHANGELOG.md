@@ -54,6 +54,13 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **Undo actually undoes now** (#32). It reported success and changed nothing:
+  the undo point is a snapshot of the document, and slider edits took it *after*
+  writing the new value, so the state it restored already contained the edit
+- Structural edits — add, remove, reorder, reset, import, paste — recorded two
+  undo points, one before the change and one after, so the first undo appeared
+  to do nothing and everything needed undoing twice
+- Redo said "Redid redo." It now names the action, like undo always did
 - **The value box no longer clips.** It was 52px wide with centred text, so a
   value like `100.25` was trimmed at *both* ends and read as `00.2` — a
   plausible wrong number rather than an obviously truncated one. Now wider and

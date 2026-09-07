@@ -41,6 +41,14 @@ public sealed class EditHistory
     /// <summary>What undoing would reverse, for a tooltip or status line.</summary>
     public string? NextUndoDescription => _undo.Last?.Value.Description;
 
+    /// <summary>What redoing would reapply, for a tooltip or status line.</summary>
+    /// <remarks>
+    /// Needed so that undoing can label the state it pushes onto the redo stack
+    /// with the action's own name. Without it the label was whatever the caller
+    /// happened to pass, and the status line read "Redid redo".
+    /// </remarks>
+    public string? NextRedoDescription => _redo.TryPeek(out EditSnapshot? next) ? next.Description : null;
+
     /// <summary>
     /// Records the state <em>before</em> a change, along with what that change
     /// was about to be.

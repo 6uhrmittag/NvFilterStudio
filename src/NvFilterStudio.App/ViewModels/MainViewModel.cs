@@ -189,7 +189,6 @@ public sealed partial class MainViewModel : ObservableObject
         ReloadWithoutAsking();
     }
 
-    /// <summary>Re-reads the store unconditionally.</summary>
     /// <summary>Re-reads the store while keeping the user where they were.</summary>
     /// <remarks>
     /// A plain reload picks the first populated slot, so applying an edit to
@@ -393,11 +392,18 @@ public sealed partial class MainViewModel : ObservableObject
         RedoCommand.NotifyCanExecuteChanged();
     }
 
+    /// <remarks>
+    /// The state pushed onto the redo stack carries the name of the action being
+    /// undone, so redoing it says "Redid your slider changes" rather than the
+    /// literal placeholder it used to pass, which read "Redid redo".
+    /// </remarks>
     [RelayCommand(CanExecute = nameof(CanUndo))]
-    private void Undo() => Restore(_history.Undo(Snapshot("redo")), undoing: true);
+    private void Undo() =>
+        Restore(_history.Undo(Snapshot(_history.NextUndoDescription ?? "the change")), undoing: true);
 
     [RelayCommand(CanExecute = nameof(CanRedo))]
-    private void Redo() => Restore(_history.Redo(Snapshot("undo")), undoing: false);
+    private void Redo() =>
+        Restore(_history.Redo(Snapshot(_history.NextRedoDescription ?? "the change")), undoing: false);
 
     /// <summary>
     /// Replaces the document with a snapshot and rebuilds the view around it.
@@ -457,6 +463,14 @@ public sealed partial class MainViewModel : ObservableObject
     private Slot? FindSlot(FilterPresetDocument document, string exePath, int slotId) =>
         document.GetGame(exePath)?.GetGroup(ActiveGroup)?.GetSlot(slotId);
 
+    /// <summary>
+    /// Records an undo point for a run of slider edits, then flags the change.
+    /// </summary>
+    /// <remarks>
+    /// Called from the control view models <em>before</em> they write the new
+    /// value, because the undo point is a snapshot of the document and taking it
+    /// afterwards captures the edit rather than the state preceding it.
+    /// </remarks>
     private void MarkDirty()
     {
         if (!_valueEditRecorded)
@@ -465,6 +479,20 @@ public sealed partial class MainViewModel : ObservableObject
             _valueEditRecorded = true;
         }
 
+        SetDirty();
+    }
+
+    /// <summary>
+    /// Flags unsaved work without touching the undo history.
+    /// </summary>
+    /// <remarks>
+    /// For the commands that record their own undo point before mutating.
+    /// Calling <see cref="MarkDirty"/> there recorded a second snapshot, of the
+    /// state *after* the change, so the first undo appeared to do nothing and
+    /// everything needed undoing twice.
+    /// </remarks>
+    private void SetDirty()
+    {
         HasUnsavedChanges = true;
         Status = "Edited — not applied yet.";
     }
@@ -505,7 +533,7 @@ public sealed partial class MainViewModel : ObservableObject
         RecordUndo($"moving {filter.Name} earlier");
         SelectedSlot.Slot.MoveFilter(filter.Order, filter.Order - 1);
         RebuildFilters();
-        MarkDirty();
+        SetDirty();
     }
 
     [RelayCommand]
@@ -519,7 +547,7 @@ public sealed partial class MainViewModel : ObservableObject
         RecordUndo($"moving {filter.Name} later");
         SelectedSlot.Slot.MoveFilter(filter.Order, filter.Order + 1);
         RebuildFilters();
-        MarkDirty();
+        SetDirty();
     }
 
     [RelayCommand]
@@ -533,7 +561,7 @@ public sealed partial class MainViewModel : ObservableObject
         RecordUndo($"removing {filter.Name}");
         SelectedSlot.Slot.RemoveFilterAt(filter.Order);
         RebuildFilters();
-        MarkDirty();
+        SetDirty();
         Status = $"Removed {filter.Name}.";
     }
 
@@ -547,7 +575,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         RecordUndo($"resetting {filter.Name}");
         filter.ResetAll();
-        MarkDirty();
+        SetDirty();
     }
 
     [RelayCommand]
@@ -576,7 +604,7 @@ public sealed partial class MainViewModel : ObservableObject
             RecordUndo($"adding {added}");
             SelectedSlot.Slot.AddFilter(skeleton);
             RebuildFilters();
-            MarkDirty();
+            SetDirty();
 
             // FilterNames keys on a shader file name. Passing skeleton["id"],
             // which is a full DriverStore path, missed every time and printed
@@ -690,7 +718,7 @@ public sealed partial class MainViewModel : ObservableObject
             RecordUndo("the import");
             int applied = ImportPlan.ApplyFile(json, _document!, _catalogue);
             RebuildFilters();
-            MarkDirty();
+            SetDirty();
             Status = applied == 0
                 ? "Nothing in that file matched a game in your store."
                 : $"Imported {applied} slot{(applied == 1 ? string.Empty : "s")} — review, then Apply.";
@@ -754,7 +782,7 @@ public sealed partial class MainViewModel : ObservableObject
             ImportPlan.ApplyShared(preset, SelectedSlot.Slot, _catalogue, out missing);
 
             RebuildFilters();
-            MarkDirty();
+            SetDirty();
 
             Status = missing.Count == 0
                 ? $"Pasted “{preset.Label}” from {preset.Game} — review, then Apply."
