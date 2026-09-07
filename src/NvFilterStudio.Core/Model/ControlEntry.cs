@@ -51,10 +51,10 @@ public sealed class ControlEntry(JsonObject node)
         get => _node["currentUIValue"]?.GetValue<double>() ?? 0;
         set
         {
-            double clamped = Math.Clamp(value, UiMinimum, UiMaximum);
-            double raw = ToRaw(clamped);
+            double snapped = SnapToStep(value);
+            double raw = ToRaw(snapped);
 
-            _node["currentUIValue"] = clamped;
+            _node["currentUIValue"] = snapped;
             _node["currentValue"] = raw;
 
             if (_node["currentValueArray"] is JsonArray)
@@ -62,6 +62,39 @@ public sealed class ControlEntry(JsonObject node)
                 _node["currentValueArray"] = new JsonArray(raw);
             }
         }
+    }
+
+    /// <summary>Rounds a UI value onto the grid NVIDIA's own slider uses.</summary>
+    /// <remarks>
+    /// The overlay snaps a slider to <c>uiMinValue + k * uiStepSize</c>, and the
+    /// reachable maximum is the last grid point at or below <c>uiMaxValue</c> — a
+    /// control declaring -50..250 step 7 topped out at 244. A value off that grid
+    /// displays correctly but jumps to the nearest grid point the moment the user
+    /// touches the slider, and cannot then be restored from NVIDIA's own UI. So
+    /// writing one is a quiet, one-way way to lose the value.
+    /// <para>
+    /// Every mapped filter uses a step of 1, which makes this invisible for them.
+    /// It matters for imports, pasted share codes and typed values, and for any
+    /// filter whose real step is not 1.
+    /// </para>
+    /// </remarks>
+    public double SnapToStep(double uiValue)
+    {
+        double clamped = Math.Clamp(uiValue, UiMinimum, UiMaximum);
+        double step = UiStep;
+
+        // A non-positive or non-finite step would divide by zero or run the grid
+        // backwards. Treat that as "no grid" rather than inventing a step.
+        if (!double.IsFinite(step) || step <= 0)
+        {
+            return clamped;
+        }
+
+        double snapped = UiMinimum + (Math.Round((clamped - UiMinimum) / step) * step);
+
+        // Rounding can land one step above the maximum, which the overlay never
+        // offers as a grid point.
+        return snapped > UiMaximum ? snapped - step : snapped;
     }
 
     /// <summary>The normalised value handed to the shader.</summary>

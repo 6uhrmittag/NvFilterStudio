@@ -36,6 +36,10 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UI values are snapped to NVIDIA's step grid (`uiMinValue + k × uiStepSize`)
+  on write (#30). A value off that grid displayed correctly but jumped as soon
+  as the slider was touched, and could not then be restored from NVIDIA's own
+  UI — a quiet, one-way way to lose a value on import or paste
 - Applying no longer throws away where you were: the selected game and slot
   survive the re-read, and the confirmation is no longer overwritten by the
   reload's own status a moment later (#27)
