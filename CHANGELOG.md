@@ -16,6 +16,8 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 - Community health files: issue forms, pull request template, code of conduct,
   security policy
 - CodeQL analysis, weekly and on every pull request
+- Imports and pasted share codes show what they would change before doing
+  it, with removals called out (#20)
 - Undo and redo, `Ctrl+Z` / `Ctrl+Y` (#25). A run of slider edits collapses
   into one step; structural changes are each their own
 - Backups are pruned, and the footer shows how much disk they use with a

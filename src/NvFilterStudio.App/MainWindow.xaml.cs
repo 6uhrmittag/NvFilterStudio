@@ -24,6 +24,16 @@ public partial class MainWindow : Window
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning,
                 MessageBoxResult.No) == MessageBoxResult.Yes,
+
+            // Imports and pasted share codes replace a whole stack, so the
+            // change is shown before it is made rather than after.
+            ConfirmChangeCallback = (what, diff) => MessageBox.Show(
+                this,
+                $"{what} would:{Environment.NewLine}{Environment.NewLine}{diff}{Environment.NewLine}Go ahead?",
+                "NvFilterStudio",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question,
+                MessageBoxResult.Yes) == MessageBoxResult.Yes,
         };
 
         DataContext = _model;

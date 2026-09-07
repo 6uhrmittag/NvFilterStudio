@@ -380,6 +380,27 @@ public sealed partial class MainViewModel : ObservableObject
         Status = undoing ? $"Undid {snapshot.Description}." : $"Redid {snapshot.Description}.";
     }
 
+    /// <summary>
+    /// Asks the user to accept a described change. Set by the view; a null
+    /// callback means proceed, which keeps the view model usable headless.
+    /// </summary>
+    public Func<string, string, bool>? ConfirmChangeCallback { get; set; }
+
+    private bool ConfirmChange(string what, string diff)
+    {
+        // Nothing would change, so there is nothing to ask about.
+        if (string.IsNullOrWhiteSpace(diff))
+        {
+            return true;
+        }
+
+        return ConfirmChangeCallback?.Invoke(what, diff) ?? true;
+    }
+
+    /// <summary>Re-finds a slot in another copy of the document.</summary>
+    private static Slot? FindSlot(FilterPresetDocument document, string exePath, int slotId) =>
+        document.GetGame(exePath)?.GetGroup(SlotGroupKind.GameFilters)?.GetSlot(slotId);
+
     private void MarkDirty()
     {
         if (!_valueEditRecorded)
@@ -584,8 +605,24 @@ public sealed partial class MainViewModel : ObservableObject
 
         try
         {
+            string json = File.ReadAllText(dialog.FileName);
+
+            // Same reasoning as pasting: preview against a copy first.
+            FilterPresetDocument preview = _document!.Clone();
+            int wouldApply = ImportPlan.ApplyFile(json, preview, _catalogue);
+
+            if (wouldApply > 0 && SelectedSlot is { } slot &&
+                FindSlot(preview, SelectedGame!.ExePath, slot.Slot.Id) is { } previewSlot &&
+                !ConfirmChange(
+                    $"Importing {Path.GetFileName(dialog.FileName)}",
+                    SlotDiff.Describe(SlotDiff.Compare(slot.Slot, previewSlot))))
+            {
+                Status = "Import cancelled.";
+                return;
+            }
+
             RecordUndo("the import");
-            int applied = ImportPlan.ApplyFile(File.ReadAllText(dialog.FileName), _document!, _catalogue);
+            int applied = ImportPlan.ApplyFile(json, _document!, _catalogue);
             RebuildFilters();
             MarkDirty();
             Status = applied == 0
@@ -630,8 +667,25 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             SharedPreset preset = ShareCode.Decode(Clipboard.GetText());
+
+            // Apply to a throwaway copy first so the change can be shown before
+            // it touches the slot the user actually has. A share code from a
+            // stranger replaces a whole stack, and "apply and see" is a poor way
+            // to discover what it does to a profile that took a while to tune.
+            FilterPresetDocument preview = _document!.Clone();
+            Slot previewSlot = FindSlot(preview, SelectedGame!.ExePath, SelectedSlot.Slot.Id)!;
+            ImportPlan.ApplyShared(preset, previewSlot, _catalogue, out IReadOnlyList<string> missing);
+
+            if (!ConfirmChange(
+                    $"Pasting “{preset.Label}” from {preset.Game} into slot {SelectedSlot.Slot.Id}",
+                    SlotDiff.Describe(SlotDiff.Compare(SelectedSlot.Slot, previewSlot))))
+            {
+                Status = "Paste cancelled.";
+                return;
+            }
+
             RecordUndo("pasting a share code");
-            ImportPlan.ApplyShared(preset, SelectedSlot.Slot, _catalogue, out IReadOnlyList<string> missing);
+            ImportPlan.ApplyShared(preset, SelectedSlot.Slot, _catalogue, out missing);
 
             RebuildFilters();
             MarkDirty();
