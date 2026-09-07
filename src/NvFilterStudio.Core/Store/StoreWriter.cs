@@ -151,6 +151,10 @@ public sealed class StoreWriter(StoreLocator locator)
                 "point. Refusing to write.");
         }
 
+        // Prune only after the new backup is verified, so a failure here can
+        // never leave the user with fewer safety nets than they started with.
+        BackupRetention.Prune(backupRoot);
+
         return destination;
     }
 

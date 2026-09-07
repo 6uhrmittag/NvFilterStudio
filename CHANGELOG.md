@@ -16,6 +16,9 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 - Community health files: issue forms, pull request template, code of conduct,
   security policy
 - CodeQL analysis, weekly and on every pull request
+- Backups are pruned, and the footer shows how much disk they use with a
+  link to open the folder (#21). The oldest backup is kept forever, and
+  anything renamed by hand is never touched
 - `nvfs.exe` console tool shipped in releases (#24). `nvfs status` reports
   the store paths and what is holding it open
 - **Support for non-Latin-1 NVIDIA App languages** (#10). Russian, Japanese,

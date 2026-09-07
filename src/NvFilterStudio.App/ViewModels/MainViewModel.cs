@@ -85,6 +85,46 @@ public sealed partial class MainViewModel : ObservableObject
     public string DisplayVersion => $"v{AppInfo.ShortVersion}";
 
     /// <summary>
+    /// How much disk the automatic backups are using.
+    /// </summary>
+    /// <remarks>
+    /// Shown because they are otherwise invisible: a full store copy is written
+    /// before every write, and nothing in the UI would tell you they exist.
+    /// </remarks>
+    [ObservableProperty]
+    private string _backupSummary = string.Empty;
+
+    /// <summary>Opens the backup folder in Explorer.</summary>
+    [RelayCommand]
+    private void OpenBackups()
+    {
+        string path = StoreWriter.DefaultBackupRoot;
+
+        try
+        {
+            Directory.CreateDirectory(path);
+            using var explorer = System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
+        }
+        catch (Exception ex) when (ex is IOException
+                                      or UnauthorizedAccessException
+                                      or System.ComponentModel.Win32Exception)
+        {
+            Status = $"Could not open {path}.";
+        }
+    }
+
+    private void RefreshBackupSummary()
+    {
+        long bytes = BackupRetention.TotalSize(StoreWriter.DefaultBackupRoot);
+        int count = BackupRetention.List(StoreWriter.DefaultBackupRoot).Count;
+
+        BackupSummary = count == 0
+            ? "no backups yet"
+            : $"{count} backup{(count == 1 ? string.Empty : "s")}, {BackupRetention.DescribeSize(bytes)}";
+    }
+
+    /// <summary>
     /// Asks the user to confirm throwing away unsaved edits. Set by the view.
     /// </summary>
     /// <remarks>
@@ -153,6 +193,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         RefreshWritability();
+        RefreshBackupSummary();
         OnPropertyChanged(nameof(IsLoaded));
     }
 

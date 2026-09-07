@@ -315,6 +315,20 @@
                 </Border>
                 <TextBlock Text="{Binding Status}" Style="{StaticResource HintText}"
                            VerticalAlignment="Center" />
+                <TextBlock Text="·" Style="{StaticResource HintText}" Margin="8,0"
+                           VerticalAlignment="Center" Opacity="0.5" />
+                <!-- Backups are written before every apply and are otherwise
+                     invisible; showing the size makes them discoverable rather
+                     than a surprise found months later. -->
+                <TextBlock VerticalAlignment="Center">
+                    <Hyperlink Command="{Binding OpenBackupsCommand}"
+                               AutomationProperties.Name="Open the backups folder"
+                               ToolTip="Open the backups folder"
+                               Foreground="{DynamicResource InkSoftBrush}">
+                        <TextBlock Text="{Binding BackupSummary}"
+                                   Style="{StaticResource HintText}" />
+                    </Hyperlink>
+                </TextBlock>
             </StackPanel>
         </StackPanel>
     </Grid>
