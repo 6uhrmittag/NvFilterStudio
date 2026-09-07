@@ -110,61 +110,12 @@
                     <TextBlock Text="Slot" Style="{StaticResource BodyText}" VerticalAlignment="Top"
                                Width="52" Margin="0,8,0,0" Foreground="{DynamicResource InkSoftBrush}" />
                     <ListBox ItemsSource="{Binding Slots}" SelectedItem="{Binding SelectedSlot}"
-                             Background="Transparent" BorderThickness="0">
+                             Background="Transparent" BorderThickness="0"
+                             ItemContainerStyle="{StaticResource SlotTile}"
+                             ItemTemplate="{StaticResource SlotTileContent}">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Margin" Value="0,0,8,0" />
-                                <Setter Property="Cursor" Value="Hand" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <Border x:Name="Chip"
-                                                    Background="{DynamicResource SunkenBrush}"
-                                                    CornerRadius="{StaticResource PillRadius}"
-                                                    BorderBrush="{DynamicResource EdgeBrush}"
-                                                    BorderThickness="1" Padding="18,7"
-                                                    TextElement.Foreground="{DynamicResource InkBrush}">
-                                                <ContentPresenter />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="Chip" Property="Background"
-                                                            Value="{DynamicResource BlushBrush}" />
-                                                    <Setter TargetName="Chip" Property="BorderBrush"
-                                                            Value="{DynamicResource BlushBrush}" />
-                                                    <!-- This text sits on the pink accent, so it needs
-                                                         the on-accent ink. Without it the summary line
-                                                         all but vanishes in dark mode. -->
-                                                    <Setter TargetName="Chip" Property="TextElement.Foreground"
-                                                            Value="{DynamicResource InkOnAccentBrush}" />
-                                                </Trigger>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Chip" Property="BorderBrush"
-                                                            Value="{DynamicResource BlushBrush}" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:SlotOption}">
-                                <!-- Foreground is deliberately not set here. The chip template
-                                     supplies it, switching to on-accent ink when selected, and an
-                                     explicit Foreground on the TextBlock would win over that and
-                                     leave the label unreadable on the pink. -->
-                                <StackPanel TextElement.FontFamily="{StaticResource UiFont}">
-                                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Center"
-                                               FontSize="{StaticResource BodySize}" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding Summary}" HorizontalAlignment="Center"
-                                               FontSize="{StaticResource SmallSize}" Opacity="0.75" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
             </StackPanel>

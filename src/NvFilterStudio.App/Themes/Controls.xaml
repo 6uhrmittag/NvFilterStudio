@@ -419,6 +419,92 @@
         </Setter>
     </Style>
 
+    <!-- Slot selector.
+
+         These were pills, and the pill radius is exactly what made them look
+         borrowed from another application. The window has a consistent shape
+         language: radius 16 for containers, radius 12 for anything you interact
+         with, and the pill radius reserved for badges - the stack-order number,
+         "unnamed sliders", "unsaved changes" - which are status labels nobody
+         can click. The slot selector was the one interactive control wearing the
+         badge shape, so the most important navigation in the window was dressed
+         as a caption.
+
+         Now a tile at the same radius as the buttons, because that is what it
+         behaves like. Fixed minimum width so the row reads as a row rather than
+         three ragged lozenges, the slot number given the weight because it is
+         the thing being chosen, and empty slots dimmed so the eye lands on the
+         ones actually holding a look. -->
+    <Style x:Key="SlotTile" TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="0,0,8,0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Tile"
+                            MinWidth="96"
+                            Background="{DynamicResource SunkenBrush}"
+                            CornerRadius="{StaticResource ControlRadius}"
+                            BorderBrush="{DynamicResource EdgeBrush}"
+                            BorderThickness="1"
+                            Padding="16,9"
+                            TextElement.Foreground="{DynamicResource InkBrush}">
+                        <ContentPresenter HorizontalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Tile" Property="Background"
+                                    Value="{DynamicResource BlushBrush}" />
+                            <Setter TargetName="Tile" Property="BorderBrush"
+                                    Value="{DynamicResource BlushBrush}" />
+                            <!-- This text sits on the pink accent, so it needs
+                                 the on-accent ink. Without it the summary line
+                                 all but vanishes in dark mode. -->
+                            <Setter TargetName="Tile" Property="TextElement.Foreground"
+                                    Value="{DynamicResource InkOnAccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Tile" Property="BorderBrush"
+                                    Value="{DynamicResource BlushBrush}" />
+                        </Trigger>
+                        <!-- Keyboard focus has to be visible on its own, because
+                             the selection colour cannot show where focus is while
+                             you arrow between tiles. Padding compensates so the
+                             tile does not jump as the border thickens. -->
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Tile" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="Tile" Property="Padding" Value="15,8" />
+                            <Setter TargetName="Tile" Property="BorderBrush"
+                                    Value="{DynamicResource BlushBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Contents of a slot tile. Foreground is deliberately never set here: the
+         tile supplies it and switches to on-accent ink when selected, and an
+         explicit Foreground would win over that and leave the label unreadable
+         on the pink. -->
+    <DataTemplate x:Key="SlotTileContent">
+        <StackPanel TextElement.FontFamily="{StaticResource UiFont}">
+            <TextBlock x:Name="Number"
+                       Text="{Binding Label}" HorizontalAlignment="Center"
+                       FontSize="17" FontWeight="SemiBold" />
+            <TextBlock x:Name="Summary"
+                       Text="{Binding Summary}" HorizontalAlignment="Center"
+                       FontSize="{StaticResource SmallSize}" Opacity="0.75"
+                       Margin="0,1,0,0" />
+        </StackPanel>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                <Setter TargetName="Number" Property="Opacity" Value="0.5" />
+                <Setter TargetName="Summary" Property="Opacity" Value="0.45" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
     <!-- Small pill label: the stack-order number, "unnamed sliders", "unsaved
          changes". These were three near-identical inline Borders; only the
          background ever differed, so that stays at the use site. -->

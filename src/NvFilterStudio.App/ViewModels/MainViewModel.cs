@@ -805,10 +805,19 @@ public sealed class SlotOption(Slot slot)
     /// <summary>Short label for the chip.</summary>
     public string Label => Slot.Label;
 
-    /// <summary>Summary shown under the chip.</summary>
+    /// <summary>Summary shown under the label.</summary>
     public string Summary => Slot.FilterCount == 0
         ? "empty"
         : $"{Slot.FilterCount} filter{(Slot.FilterCount == 1 ? string.Empty : "s")}";
+
+    /// <summary>
+    /// Whether the slot holds nothing, so the tile can say so without words.
+    /// </summary>
+    /// <remarks>
+    /// Which slots are in use is the thing being scanned for, and reading three
+    /// summary lines to find out is slower than seeing it.
+    /// </remarks>
+    public bool IsEmpty => Slot.FilterCount == 0;
 
     /// <inheritdoc />
     public override string ToString() =>

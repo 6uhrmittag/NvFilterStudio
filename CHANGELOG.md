@@ -7,6 +7,10 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- The slot selector is tiles rather than pills. The window reserves the pill
+  shape for badges — status labels nobody can click — so the one control you
+  navigate with was wearing the shape of a caption. Now the same radius as the
+  buttons, a fixed width so the row lines up, and empty slots dimmed
 - Redrawn sliders: a solid thumb on a 6px track instead of a 20px hollow ring
   on a hairline, which read as floating above the track rather than gripping it
 - A tick on each slider marking NVIDIA's default, and a dot beside any control
