@@ -38,6 +38,12 @@ public sealed partial class MainViewModel : ObservableObject
 
     public MainViewModel()
     {
+        // Order matters, weakest first: each of these only fills gaps left by
+        // the ones before, and reading the store later refreshes anything it
+        // covers. The user's own store is the best source (their driver, their
+        // language), their cache next, and the shipped seed only ever covers
+        // filters they have never used.
+        _catalogue.LoadSeed();
         _catalogue.LoadCache();
 
         // The overlay can be switched off at any moment, so the Apply gate
@@ -552,7 +558,12 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
-        JsonObject? skeleton = _catalogue.CreateSkeleton(FilterToAdd.Shader);
+        // The seed stores a bare file name, because the real id embeds the
+        // driver's DriverStore hash. Rebase onto whatever directory this
+        // machine's own filters use.
+        JsonObject? skeleton = _catalogue.CreateSkeleton(
+            FilterToAdd.Shader,
+            _document is null ? null : FilterCatalogue.FindShaderDirectory(_document));
         if (skeleton is null)
         {
             Status = $"No definition known for {FilterToAdd.Shader} yet.";

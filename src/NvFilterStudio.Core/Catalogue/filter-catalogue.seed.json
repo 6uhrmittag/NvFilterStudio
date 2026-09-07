@@ -1,0 +1,1597 @@
+{
+  "OldFilm.fx": {
+    "id": "OldFilm.fx",
+    "name": "Old Film",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Gamma",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Exposure",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Contrast",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "VignetteStrength",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "FilterStrength",
+        "currentValueArray": [
+          1.0
+        ],
+        "id": 4,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 1.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 100,
+        "defaultValue": 100
+      },
+      {
+        "controlType": "slider",
+        "displayName": "GrimeStrength",
+        "currentValueArray": [
+          1.0
+        ],
+        "id": 5,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 1.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 100,
+        "defaultValue": 100
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "BeautifyDOF.fx": {
+    "id": "BeautifyDOF.fx",
+    "name": "Auto Depth of Field",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Speed",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0.05,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 5,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Intensity",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "InvertZAxis",
+        "currentValueArray": [
+          true
+        ],
+        "id": 2,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": true
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "InvertYAxis",
+        "currentValueArray": [
+          false
+        ],
+        "id": 3,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": false
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Adjustments.fx": {
+    "id": "Adjustments.fx",
+    "name": "Brightness/Contrast",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Exposure",
+        "currentValueArray": [
+          0.10000000000000009
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.10000000000000009,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 10,
+        "defaultValue": 10
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Contrast",
+        "currentValueArray": [
+          0.1499999999999999
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.1499999999999999,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 15,
+        "defaultValue": 15
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Highlights",
+        "currentValueArray": [
+          0.30000000000000004
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.30000000000000004,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 30,
+        "defaultValue": 30
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Shadows",
+        "currentValueArray": [
+          -0.09999999999999998
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": -0.09999999999999998,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": -10,
+        "defaultValue": -10
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Gamma",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 4,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Splitscreen.fx": {
+    "id": "Splitscreen.fx",
+    "name": "Splitscreen",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "boolean",
+        "displayName": "SplitAndCompare",
+        "currentValueArray": [
+          false
+        ],
+        "id": 0,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": false
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Position",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -0.22,
+        "maxValue": 1.22,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Rotation",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "°",
+        "minValue": -180,
+        "maxValue": 180,
+        "stepSize": 1.01,
+        "currentValue": 0.0,
+        "uiMinValue": -180,
+        "uiMaxValue": 180,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "DividerWidth",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "DividerColor",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 4,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "GradientFade",
+        "currentValueArray": [
+          false
+        ],
+        "id": 5,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": false
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Zoom",
+        "currentValueArray": [
+          1.0
+        ],
+        "id": 6,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0.5,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 1.0,
+        "uiMinValue": 50,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 100,
+        "defaultValue": 100
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Details.fx": {
+    "id": "Details.fx",
+    "name": "Details",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Sharpen",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Clarity",
+        "currentValueArray": [
+          0.7
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.7,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 70,
+        "defaultValue": 70
+      },
+      {
+        "controlType": "slider",
+        "displayName": "HDRToning",
+        "currentValueArray": [
+          0.6000000000000001
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.6000000000000001,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 60,
+        "defaultValue": 60
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Bloom",
+        "currentValueArray": [
+          0.15
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.15,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 15,
+        "defaultValue": 15
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Colorblind.fx": {
+    "id": "Colorblind.fx",
+    "name": "Color Blind Mode",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Protanopia",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Deuteranopia",
+        "currentValueArray": [
+          1.0
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 1.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 100,
+        "defaultValue": 100
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Tritanopia",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Color.fx": {
+    "id": "Color.fx",
+    "name": "Color",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "TintColor",
+        "currentValueArray": [
+          0.2
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.2,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 20,
+        "defaultValue": 20
+      },
+      {
+        "controlType": "slider",
+        "displayName": "TintIntensity",
+        "currentValueArray": [
+          0.3
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.3,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 30,
+        "defaultValue": 30
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Temperature",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "#",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Vibrance",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "#",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Letterbox.fx": {
+    "id": "Letterbox.fx",
+    "name": "Letterbox",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "HorizontalScale",
+        "currentValueArray": [
+          21.0
+        ],
+        "id": 0,
+        "dataType": "int",
+        "dimension": 0,
+        "measureUnit": "",
+        "minValue": 1,
+        "maxValue": 30,
+        "stepSize": 1,
+        "currentValue": 21.0,
+        "uiMinValue": 1,
+        "uiMaxValue": 30,
+        "uiStepSize": 1,
+        "currentUIValue": 21,
+        "defaultValue": 21
+      },
+      {
+        "controlType": "slider",
+        "displayName": "VerticalScale",
+        "currentValueArray": [
+          9.0
+        ],
+        "id": 1,
+        "dataType": "int",
+        "dimension": 0,
+        "measureUnit": "",
+        "minValue": 1,
+        "maxValue": 30,
+        "stepSize": 1,
+        "currentValue": 9.0,
+        "uiMinValue": 1,
+        "uiMaxValue": 30,
+        "uiStepSize": 1,
+        "currentUIValue": 9,
+        "defaultValue": 9
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Watercolor.fx": {
+    "id": "Watercolor.fx",
+    "name": "Watercolor",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Gamma",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Exposure",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Contrast",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Saturation",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "TintIntensity",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 4,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "PencilIntensity",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 5,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "PencilBlur",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 6,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "PencilSoftness",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 7,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "ColorDetail",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 8,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "ColorBlur",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 9,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "NvTiltShift.fx": {
+    "id": "NvTiltShift.fx",
+    "name": "Tilt-Shift",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Axis",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "",
+        "minValue": 0,
+        "maxValue": 180,
+        "stepSize": 1,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 180,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "BlurSize",
+        "currentValueArray": [
+          15.0
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 30,
+        "stepSize": 0.3,
+        "currentValue": 15.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "BlurCurve",
+        "currentValueArray": [
+          2.0
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 10,
+        "stepSize": 0.1,
+        "currentValue": 2.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 20,
+        "defaultValue": 20
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "SpecialFX.fx": {
+    "id": "SpecialFX.fx",
+    "name": "Special FX",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Retro",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Sketch",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Halftone",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Sepia",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Sharpen.fx": {
+    "id": "Sharpen.fx",
+    "name": "Sharpen",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Intensity",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "IgnoreFilmGrain",
+        "currentValueArray": [
+          0.15
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.15,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 15,
+        "defaultValue": 15
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "NightMode.fx": {
+    "id": "NightMode.fx",
+    "name": "Night Mode",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Intensity",
+        "currentValueArray": [
+          0.3
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.3,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 30,
+        "defaultValue": 30
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "Painterly.fx": {
+    "id": "Painterly.fx",
+    "name": "Painterly",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Iterations",
+        "currentValueArray": [
+          3.0
+        ],
+        "id": 0,
+        "dataType": "int",
+        "dimension": 0,
+        "measureUnit": "",
+        "minValue": 1,
+        "maxValue": 8,
+        "stepSize": 1,
+        "currentValue": 3.0,
+        "uiMinValue": 1,
+        "uiMaxValue": 8,
+        "uiStepSize": 1,
+        "currentUIValue": 3,
+        "defaultValue": 3
+      },
+      {
+        "controlType": "slider",
+        "displayName": "SampleDirections",
+        "currentValueArray": [
+          6.0
+        ],
+        "id": 1,
+        "dataType": "int",
+        "dimension": 0,
+        "measureUnit": "",
+        "minValue": 4,
+        "maxValue": 8,
+        "stepSize": 1,
+        "currentValue": 6.0,
+        "uiMinValue": 4,
+        "uiMaxValue": 8,
+        "uiStepSize": 1,
+        "currentUIValue": 6,
+        "defaultValue": 6
+      },
+      {
+        "controlType": "slider",
+        "displayName": "Radius",
+        "currentValueArray": [
+          5.0
+        ],
+        "id": 2,
+        "dataType": "int",
+        "dimension": 0,
+        "measureUnit": "",
+        "minValue": 1,
+        "maxValue": 10,
+        "stepSize": 1,
+        "currentValue": 5.0,
+        "uiMinValue": 1,
+        "uiMaxValue": 10,
+        "uiStepSize": 1,
+        "currentUIValue": 5,
+        "defaultValue": 5
+      },
+      {
+        "controlType": "slider",
+        "displayName": "EdgeSharpness",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "NvVignette.fx": {
+    "id": "NvVignette.fx",
+    "name": "Vignette",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Intensity",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "DOF.fx": {
+    "id": "DOF.fx",
+    "name": "Depth of Field",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "FocusDepth",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "FarBlurCurve",
+        "currentValueArray": [
+          0.15
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.15,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 15,
+        "defaultValue": 15
+      },
+      {
+        "controlType": "slider",
+        "displayName": "NearBlurCurve",
+        "currentValueArray": [
+          0.85
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.85,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 85,
+        "defaultValue": 85
+      },
+      {
+        "controlType": "slider",
+        "displayName": "BlurRadius",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 3,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "InvertZAxis",
+        "currentValueArray": [
+          true
+        ],
+        "id": 4,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": true
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "InvertYAxis",
+        "currentValueArray": [
+          false
+        ],
+        "id": 5,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": false
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "BlacknWhite.fx": {
+    "id": "BlacknWhite.fx",
+    "name": "Black and White",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Intensity",
+        "currentValueArray": [
+          1.0
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 1.0,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 100,
+        "defaultValue": 100
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "EnableDepth",
+        "currentValueArray": [
+          false
+        ],
+        "id": 1,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": false
+      },
+      {
+        "controlType": "slider",
+        "displayName": "EdgeDistance",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 2,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "InvertZAxis",
+        "currentValueArray": [
+          true
+        ],
+        "id": 3,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": true
+      },
+      {
+        "controlType": "boolean",
+        "displayName": "InvertYAxis",
+        "currentValueArray": [
+          false
+        ],
+        "id": 4,
+        "dataType": "bool",
+        "dimension": 0,
+        "currentValue": false
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  },
+  "NvNewSharpen.fx": {
+    "id": "NvNewSharpen.fx",
+    "name": "Sharpen+",
+    "isSelected": true,
+    "stackIdx": 0,
+    "controls": [
+      {
+        "controlType": "slider",
+        "displayName": "Intensity",
+        "currentValueArray": [
+          0.5
+        ],
+        "id": 0,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": 0,
+        "maxValue": 1,
+        "stepSize": 0.01,
+        "currentValue": 0.5,
+        "uiMinValue": 0,
+        "uiMaxValue": 100,
+        "uiStepSize": 1,
+        "currentUIValue": 50,
+        "defaultValue": 50
+      },
+      {
+        "controlType": "slider",
+        "displayName": "TextureDetail",
+        "currentValueArray": [
+          0.0
+        ],
+        "id": 1,
+        "dataType": "float",
+        "dimension": 0,
+        "measureUnit": "%",
+        "minValue": -1,
+        "maxValue": 1,
+        "stepSize": 0.02,
+        "currentValue": 0.0,
+        "uiMinValue": -100,
+        "uiMaxValue": 100,
+        "uiStepSize": 2,
+        "currentUIValue": 0,
+        "defaultValue": 0
+      }
+    ],
+    "isPPEFilter": false,
+    "isExpanded": false,
+    "errorCodes": [],
+    "isVisible": false
+  }
+}

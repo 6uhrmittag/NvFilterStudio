@@ -9,4 +9,11 @@
     <PackageReference Include="Snappier" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Filter definitions harvested from a real store. Embedded so a fresh
+         install can add filters the user has never used, without which the
+         catalogue would be empty and "add filter" unavailable. -->
+    <EmbeddedResource Include="Catalogue/filter-catalogue.seed.json" />
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,17 @@ namespace NvFilterStudio.Core.Catalogue;
 /// <param name="Shader">Shader file name, the stable identity.</param>
 /// <param name="DisplayName">Friendly name for the UI.</param>
 /// <param name="Skeleton">A complete filter node, ready to add to a stack.</param>
-public sealed record CatalogueEntry(string Shader, string DisplayName, JsonObject Skeleton);
+public sealed record CatalogueEntry(string Shader, string DisplayName, JsonObject Skeleton)
+{
+    /// <summary>The friendly name, for anything that renders this directly.</summary>
+    /// <remarks>
+    /// A record's generated <c>ToString</c> prints every property, which here
+    /// means the whole skeleton — several kilobytes of JSON. WPF falls back to
+    /// it for a combo item's automation name, so a screen reader read the entire
+    /// filter definition aloud for every entry in the list.
+    /// </remarks>
+    public override string ToString() => DisplayName;
+}
 
 /// <summary>
 /// Known filter definitions, so filters can be added to a slot.
@@ -52,10 +62,66 @@ public sealed class FilterCatalogue
     public bool Knows(string shader) => _entries.ContainsKey(shader);
 
     /// <summary>Gets a fresh, detached skeleton ready to insert.</summary>
-    public JsonObject? CreateSkeleton(string shader) =>
-        _entries.TryGetValue(shader, out CatalogueEntry? entry)
-            ? (JsonObject)JsonNode.Parse(entry.Skeleton.ToJsonString())!
-            : null;
+    /// <param name="shader">Shader file name.</param>
+    /// <param name="nvCameraDirectory">
+    /// Where this machine's shaders live, used to rebuild the filter id. Pass
+    /// null to leave the id as stored.
+    /// </param>
+    /// <remarks>
+    /// The id is an absolute path carrying the driver's DriverStore hash, so a
+    /// shipped definition cannot hold a usable one — the seed stores a bare file
+    /// name and it is rebased here. Take the directory from a filter already in
+    /// the user's own document: that is what their overlay actually wrote, which
+    /// beats probing the DriverStore and guessing between installed versions.
+    /// </remarks>
+    public JsonObject? CreateSkeleton(string shader, string? nvCameraDirectory = null)
+    {
+        if (!_entries.TryGetValue(shader, out CatalogueEntry? entry))
+        {
+            return null;
+        }
+
+        var skeleton = (JsonObject)JsonNode.Parse(entry.Skeleton.ToJsonString())!;
+
+        if (!string.IsNullOrWhiteSpace(nvCameraDirectory))
+        {
+            new FilterEntry(skeleton).RebaseShaderDirectory(nvCameraDirectory);
+        }
+
+        return skeleton;
+    }
+
+    /// <summary>
+    /// The directory this document's filters are loaded from, if any say.
+    /// </summary>
+    /// <remarks>
+    /// Every filter in a store shares one DriverStore directory, so the first
+    /// one that has a rooted path answers for all of them.
+    /// </remarks>
+    public static string? FindShaderDirectory(FilterPresetDocument document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+
+        foreach (GameProfile game in document.Games())
+        {
+            foreach (SlotGroup group in game.Groups())
+            {
+                foreach (Slot slot in group.Slots)
+                {
+                    foreach (FilterEntry filter in slot.Filters)
+                    {
+                        if (Path.IsPathRooted(filter.Id) &&
+                            Path.GetDirectoryName(filter.Id) is { Length: > 0 } directory)
+                        {
+                            return directory;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
 
     /// <summary>
     /// Learns every filter definition present in <paramref name="document"/>.
@@ -129,6 +195,69 @@ public sealed class FilterCatalogue
         // Only a genuinely new shader counts, so callers do not rewrite the
         // cache file on every read just because definitions were refreshed.
         return isNew;
+    }
+
+    /// <summary>Resource name of the definitions shipped with the app.</summary>
+    private const string SeedResource =
+        "NvFilterStudio.Core.Catalogue.filter-catalogue.seed.json";
+
+    /// <summary>
+    /// Loads the definitions shipped with the app.
+    /// </summary>
+    /// <remarks>
+    /// Definitions only ever enter a store once a filter has been used, so on a
+    /// fresh machine the catalogue would be empty and adding a filter simply
+    /// unavailable. These were harvested from a real store by putting every
+    /// filter into one slot.
+    /// <para>
+    /// Anything already known wins, because both the user's own store and their
+    /// cache are closer to their machine than a snapshot taken on someone
+    /// else's: their driver may differ (#11), and their labels are in their own
+    /// language rather than the English used here.
+    /// </para>
+    /// <para>
+    /// The labels are English on purpose. The overlay renders whatever
+    /// <c>displayName</c> it is given and never substitutes its own, so omitting
+    /// them would leave the user's overlay showing blank slider labels.
+    /// </para>
+    /// </remarks>
+    /// <returns>How many definitions the seed contributed.</returns>
+    public int LoadSeed()
+    {
+        using Stream? stream = typeof(FilterCatalogue).Assembly
+            .GetManifestResourceStream(SeedResource);
+
+        if (stream is null)
+        {
+            return 0;
+        }
+
+        try
+        {
+            if (JsonNode.Parse(stream) is not JsonObject root)
+            {
+                return 0;
+            }
+
+            int added = 0;
+            foreach ((string shader, JsonNode? node) in root)
+            {
+                if (node is JsonObject skeleton && !_entries.ContainsKey(shader))
+                {
+                    _entries[shader] = new CatalogueEntry(
+                        shader, Share.FilterNames.ForShader(shader), skeleton);
+                    added++;
+                }
+            }
+
+            return added;
+        }
+        catch (JsonException)
+        {
+            // A broken seed is a build problem, not the user's; everything in it
+            // can still be learned from their own store.
+            return 0;
+        }
     }
 
     /// <summary>Loads previously learned definitions, ignoring a missing or damaged cache.</summary>

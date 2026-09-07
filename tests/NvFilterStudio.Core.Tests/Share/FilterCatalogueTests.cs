@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using NvFilterStudio.Core.Catalogue;
 using NvFilterStudio.Core.Model;
+using NvFilterStudio.Core.Tests.Store;
 
 namespace NvFilterStudio.Core.Tests.Share;
 

@@ -7,6 +7,12 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **A seed filter catalogue ships with the app** (#7), so adding a filter works
+  on a fresh install rather than only for filters already used. All 18 filters
+  and 73 controls, labelled in English — the overlay renders whatever
+  `displayName` it is given and never substitutes its own, so omitting them
+  would leave blank labels in NVIDIA's UI. Definitions learned from the user's
+  own store still win: their driver and their language are closer to the truth
 - **All eighteen filters are named** (#6), up from four — including ten nobody
   had catalogued: Old Film, Auto Depth of Field, Black and White, Depth of
   Field, Sharpen+, Tilt-Shift, Vignette, Sharpen, and the rest. 73 controls
