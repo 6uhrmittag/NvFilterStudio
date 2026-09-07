@@ -2,7 +2,17 @@ using System.Text.Json.Nodes;
 
 namespace NvFilterStudio.Core.Model;
 
-/// <summary>One slider within a filter.</summary>
+/// <summary>How a control is presented and stored.</summary>
+public enum ControlKind
+{
+    /// <summary>A numeric slider with bounds, a step and a raw mapping.</summary>
+    Slider,
+
+    /// <summary>An on/off toggle, stored as a JSON boolean with no bounds.</summary>
+    Boolean,
+}
+
+/// <summary>One control within a filter — a slider or an on/off toggle.</summary>
 /// <remarks>
 /// A control's stable identity is (shader file name, <see cref="Id"/>).
 /// <see cref="LocalizedName"/> follows the NVIDIA App's UI language and cannot
@@ -19,23 +29,69 @@ public sealed class ControlEntry(JsonObject node)
     /// <summary>Localised label as written by the overlay.</summary>
     public string LocalizedName => _node["displayName"]?.GetValue<string>() ?? $"control {Id}";
 
+    /// <summary>Whether this is a slider or an on/off toggle.</summary>
+    /// <remarks>
+    /// Boolean controls store <c>currentValue</c> as a JSON <c>true</c>/<c>false</c>
+    /// and carry none of the numeric fields — no <c>minValue</c>, no
+    /// <c>uiMinValue</c>, no <c>currentUIValue</c>, no <c>defaultValue</c>.
+    /// Treating one as a slider throws on read and, worse, replaces the boolean
+    /// with a float on write, destroying the control.
+    /// </remarks>
+    public ControlKind Kind =>
+        Text("controlType") is "boolean" || Text("dataType") is "bool"
+            ? ControlKind.Boolean
+            : ControlKind.Slider;
+
+    /// <summary>On/off state of a <see cref="ControlKind.Boolean"/> control.</summary>
+    /// <remarks>Setting this on a slider would corrupt it, so it is ignored there.</remarks>
+    public bool BoolValue
+    {
+        get => _node["currentValue"] is JsonValue value && value.TryGetValue(out bool flag) && flag;
+        set
+        {
+            if (Kind != ControlKind.Boolean)
+            {
+                return;
+            }
+
+            _node["currentValue"] = value;
+
+            if (_node["currentValueArray"] is JsonArray)
+            {
+                _node["currentValueArray"] = new JsonArray(value);
+            }
+        }
+    }
+
+    /// <summary>Reads a numeric field, or null when it is absent or not a number.</summary>
+    /// <remarks>
+    /// <c>GetValue&lt;double&gt;()</c> throws on a JSON boolean rather than
+    /// returning a default, which is how a single toggle in one filter took the
+    /// whole document down.
+    /// </remarks>
+    private double? Number(string field) =>
+        _node[field] is JsonValue value && value.TryGetValue(out double number) ? number : null;
+
+    private string? Text(string field) =>
+        _node[field] is JsonValue value && value.TryGetValue(out string? text) ? text?.ToLowerInvariant() : null;
+
     /// <summary>Lowest value the UI offers.</summary>
-    public double UiMinimum => _node["uiMinValue"]?.GetValue<double>() ?? 0;
+    public double UiMinimum => Number("uiMinValue") ?? 0;
 
     /// <summary>Highest value the UI offers.</summary>
-    public double UiMaximum => _node["uiMaxValue"]?.GetValue<double>() ?? 100;
+    public double UiMaximum => Number("uiMaxValue") ?? (Kind == ControlKind.Boolean ? 1 : 100);
 
     /// <summary>Increment the UI steps by.</summary>
-    public double UiStep => _node["uiStepSize"]?.GetValue<double>() ?? 1;
+    public double UiStep => Number("uiStepSize") ?? 1;
 
     /// <summary>Default value, in UI units.</summary>
-    public double UiDefault => _node["defaultValue"]?.GetValue<double>() ?? 0;
+    public double UiDefault => Number("defaultValue") ?? 0;
 
     /// <summary>Lowest raw value the shader accepts.</summary>
-    public double RawMinimum => _node["minValue"]?.GetValue<double>() ?? 0;
+    public double RawMinimum => Number("minValue") ?? 0;
 
     /// <summary>Highest raw value the shader accepts.</summary>
-    public double RawMaximum => _node["maxValue"]?.GetValue<double>() ?? 1;
+    public double RawMaximum => Number("maxValue") ?? 1;
 
     /// <summary>
     /// The value shown in the NVIDIA App.
@@ -48,9 +104,20 @@ public sealed class ControlEntry(JsonObject node)
     /// </remarks>
     public double UiValue
     {
-        get => _node["currentUIValue"]?.GetValue<double>() ?? 0;
+        get => Kind == ControlKind.Boolean
+            ? (BoolValue ? 1 : 0)
+            : Number("currentUIValue") ?? 0;
         set
         {
+            // A boolean control has no UI scale to snap to and no numeric
+            // fields to write. Going through the slider path here would replace
+            // its JSON true with a float and bolt on bounds it never had.
+            if (Kind == ControlKind.Boolean)
+            {
+                BoolValue = value != 0;
+                return;
+            }
+
             double snapped = SnapToStep(value);
             double raw = ToRaw(snapped);
 
@@ -98,10 +165,28 @@ public sealed class ControlEntry(JsonObject node)
     }
 
     /// <summary>The normalised value handed to the shader.</summary>
-    public double RawValue => _node["currentValue"]?.GetValue<double>() ?? 0;
+    /// <remarks>
+    /// A boolean control reports 1 or 0, so callers that only deal in numbers
+    /// still get something meaningful. Read <see cref="BoolValue"/> for the
+    /// faithful value. Reading the field as a double used to throw outright on
+    /// any store containing a boolean control.
+    /// </remarks>
+    public double RawValue => Kind == ControlKind.Boolean
+        ? (BoolValue ? 1 : 0)
+        : Number("currentValue") ?? 0;
 
     /// <summary>Restores <see cref="UiValue"/> to <see cref="UiDefault"/>.</summary>
-    public void ResetToDefault() => UiValue = UiDefault;
+    /// <remarks>
+    /// Boolean controls are left alone: the store records no <c>defaultValue</c>
+    /// for them, and picking one would silently change a setting the user chose.
+    /// </remarks>
+    public void ResetToDefault()
+    {
+        if (Kind != ControlKind.Boolean)
+        {
+            UiValue = UiDefault;
+        }
+    }
 
     /// <summary>
     /// Converts a UI value to the shader's raw scale.

@@ -30,11 +30,17 @@ public readonly record struct BlockHandle(long Offset, long Size);
 /// <param name="UserKey">Key without that suffix — what callers match on.</param>
 /// <param name="Sequence">Sequence number carried in the suffix.</param>
 /// <param name="Value">The stored value.</param>
+/// <param name="IsDeletion">
+/// Whether this entry is a tombstone rather than a value. A deletion can carry
+/// a higher sequence than the live record for the same key, so anything picking
+/// a winner purely by sequence has to account for it.
+/// </param>
 public readonly record struct TableEntry(
     ReadOnlyMemory<byte> InternalKey,
     ReadOnlyMemory<byte> UserKey,
     ulong Sequence,
-    ReadOnlyMemory<byte> Value);
+    ReadOnlyMemory<byte> Value,
+    bool IsDeletion);
 
 /// <summary>Raised when a table cannot be parsed.</summary>
 public sealed class SsTableFormatException(string message) : Exception(message);
@@ -118,7 +124,8 @@ public static class SsTable
                 ulong tag = BinaryPrimitives.ReadUInt64LittleEndian(key.Span[^InternalKeySuffix..]);
 
                 // Top 56 bits are the sequence, low 8 the record type.
-                entries.Add(new TableEntry(key, userKey, tag >> 8, data));
+                // Low byte is the record type: 0 deletion, 1 value.
+                entries.Add(new TableEntry(key, userKey, tag >> 8, data, (tag & 0xFF) == 0));
             }
         }
 

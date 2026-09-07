@@ -36,6 +36,14 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **Boolean controls no longer crash the reader or get corrupted on write.**
+  Filters such as `BeautifyDOF.fx` carry on/off controls that store a JSON
+  `true` and none of the numeric fields; reading one as a double threw and took
+  the whole document with it, and writing one through the slider path would have
+  replaced the boolean with a float
+- Filter-preset keys are matched by index id as well as name, so Chromium's
+  `ExistsEntry` index — same name, sometimes a *higher* sequence, but a version
+  counter rather than a document — can no longer be mistaken for the record
 - UI values are snapped to NVIDIA's step grid (`uiMinValue + k × uiStepSize`)
   on write (#30). A value off that grid displayed correctly but jumped as soon
   as the slider was touched, and could not then be restored from NVIDIA's own

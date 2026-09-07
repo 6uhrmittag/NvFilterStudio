@@ -153,7 +153,8 @@ internal static class Program
                     }
 
                     Console.WriteLine($"    seq={entry.Sequence}  key={entry.UserKey.Length}B  " +
-                                      $"value={entry.Value.Length}B  {decoded}");
+                                      $"value={entry.Value.Length}B  " +
+                                      $"{(entry.IsDeletion ? "DELETION  " : string.Empty)}{decoded}");
                 }
             }
             catch (SsTableFormatException ex)
