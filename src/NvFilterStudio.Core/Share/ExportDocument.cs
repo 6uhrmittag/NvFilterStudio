@@ -14,9 +14,23 @@ public static class FilterNames
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["Adjustments.fx"] = "Brightness/Contrast",
+            ["BeautifyDOF.fx"] = "Auto Depth of Field",
+            ["BlacknWhite.fx"] = "Black and White",
             ["Color.fx"] = "Color",
-            ["Details.fx"] = "Details",
             ["Colorblind.fx"] = "Color Blind Mode",
+            ["DOF.fx"] = "Depth of Field",
+            ["Details.fx"] = "Details",
+            ["Letterbox.fx"] = "Letterbox",
+            ["NightMode.fx"] = "Night Mode",
+            ["NvNewSharpen.fx"] = "Sharpen+",
+            ["NvTiltShift.fx"] = "Tilt-Shift",
+            ["NvVignette.fx"] = "Vignette",
+            ["OldFilm.fx"] = "Old Film",
+            ["Painterly.fx"] = "Painterly",
+            ["Sharpen.fx"] = "Sharpen",
+            ["SpecialFX.fx"] = "Special FX",
+            ["Splitscreen.fx"] = "Splitscreen",
+            ["Watercolor.fx"] = "Watercolor",
         };
 
     /// <summary>
@@ -28,9 +42,11 @@ public static class FilterNames
     /// on a German install <c>Adjustments.fx</c> control 2 is labelled
     /// <c>Hoogtepunten</c>, which is Dutch.
     /// <para>
-    /// Six further shaders exist (Letterbox, NightMode, SpecialFX, Watercolor,
-    /// Painterly, Splitscreen). They read and write correctly but fall back to
-    /// "control N" until someone maps them.
+    /// Harvested by putting all eighteen filters into one slot and reading the
+    /// result back, so the ids and the control counts are observed fact. The
+    /// English names are <em>translations of the German labels</em> from that
+    /// machine, not text seen in an English NVIDIA App — a few will read a
+    /// little off, and a correction from anyone running one is welcome.
     /// </para>
     /// </remarks>
     public static IReadOnlyDictionary<string, IReadOnlyDictionary<int, string>> ControlsByShader { get; } =
@@ -44,12 +60,42 @@ public static class FilterNames
                 [3] = "Shadows",
                 [4] = "Gamma",
             },
+            ["BeautifyDOF.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Speed",
+                [1] = "Intensity",
+                [2] = "InvertZAxis",
+                [3] = "InvertYAxis",
+            },
+            ["BlacknWhite.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Intensity",
+                [1] = "EnableDepth",
+                [2] = "EdgeDistance",
+                [3] = "InvertZAxis",
+                [4] = "InvertYAxis",
+            },
             ["Color.fx"] = new Dictionary<int, string>
             {
                 [0] = "TintColor",
                 [1] = "TintIntensity",
                 [2] = "Temperature",
                 [3] = "Vibrance",
+            },
+            ["Colorblind.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Protanopia",
+                [1] = "Deuteranopia",
+                [2] = "Tritanopia",
+            },
+            ["DOF.fx"] = new Dictionary<int, string>
+            {
+                [0] = "FocusDepth",
+                [1] = "FarBlurCurve",
+                [2] = "NearBlurCurve",
+                [3] = "BlurRadius",
+                [4] = "InvertZAxis",
+                [5] = "InvertYAxis",
             },
             ["Details.fx"] = new Dictionary<int, string>
             {
@@ -58,15 +104,84 @@ public static class FilterNames
                 [2] = "HDRToning",
                 [3] = "Bloom",
             },
-            ["Colorblind.fx"] = new Dictionary<int, string>
+            ["Letterbox.fx"] = new Dictionary<int, string>
             {
-                [0] = "Protanopia",
-                [1] = "Deuteranopia",
-                [2] = "Tritanopia",
+                [0] = "HorizontalScale",
+                [1] = "VerticalScale",
+            },
+            ["NightMode.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Intensity",
+            },
+            ["NvNewSharpen.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Intensity",
+                [1] = "TextureDetail",
+            },
+            ["NvTiltShift.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Axis",
+                [1] = "BlurSize",
+                [2] = "BlurCurve",
+            },
+            ["NvVignette.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Intensity",
+            },
+            ["OldFilm.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Gamma",
+                [1] = "Exposure",
+                [2] = "Contrast",
+                [3] = "VignetteStrength",
+                [4] = "FilterStrength",
+                [5] = "GrimeStrength",
+            },
+            ["Painterly.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Iterations",
+                [1] = "SampleDirections",
+                [2] = "Radius",
+                [3] = "EdgeSharpness",
+            },
+            ["Sharpen.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Intensity",
+                [1] = "IgnoreFilmGrain",
+            },
+            ["SpecialFX.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Retro",
+                [1] = "Sketch",
+                [2] = "Halftone",
+                [3] = "Sepia",
+            },
+            ["Splitscreen.fx"] = new Dictionary<int, string>
+            {
+                [0] = "SplitAndCompare",
+                [1] = "Position",
+                [2] = "Rotation",
+                [3] = "DividerWidth",
+                [4] = "DividerColor",
+                [5] = "GradientFade",
+                [6] = "Zoom",
+            },
+            ["Watercolor.fx"] = new Dictionary<int, string>
+            {
+                [0] = "Gamma",
+                [1] = "Exposure",
+                [2] = "Contrast",
+                [3] = "Saturation",
+                [4] = "TintIntensity",
+                [5] = "PencilIntensity",
+                [6] = "PencilBlur",
+                [7] = "PencilSoftness",
+                [8] = "ColorDetail",
+                [9] = "ColorBlur",
             },
         };
 
-    /// <summary>Friendly filter name, falling back to the shader file name.</summary>
+    /// <summary>Friendly name for a shader, or the file name when unmapped.</summary>
     public static string ForShader(string shader) =>
         ByShader.TryGetValue(shader, out string? name) ? name : shader;
 

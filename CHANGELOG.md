@@ -7,6 +7,10 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **All eighteen filters are named** (#6), up from four — including ten nobody
+  had catalogued: Old Film, Auto Depth of Field, Black and White, Depth of
+  Field, Sharpen+, Tilt-Shift, Vignette, Sharpen, and the rest. 73 controls
+  mapped to English names, harvested by putting every filter into one slot
 - `.ldb` sorted tables are parsed properly rather than scanned for the JSON
   marker (#9). Blocks are Snappy-decompressed and key prefix compression is
   undone, which recovers the **key bytes** a scan cannot — so a store whose log
