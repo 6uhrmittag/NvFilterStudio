@@ -22,7 +22,7 @@ way to get it back — or to send it to a friend. This fixes that.
 - 🎚️ **Edit** sliders, reorder the stack, add and remove filters
 - 💾 **Export** a profile to a JSON file
 - 💌 **Share** a profile as a short code you can paste into Discord
-- ↩️ **Back up** automatically before every write
+- ↩️ **Undo** anything, and back up automatically before every write
 
 ## Getting started
 
@@ -65,6 +65,7 @@ The app watches for this and enables **Apply** on its own once the way is clear.
 
 | | |
 |---|---|
+| `Ctrl+Z` / `Ctrl+Y` | Undo / redo |
 | `Ctrl+S` | Apply to NVIDIA |
 | `Ctrl+R` | Re-read from NVIDIA |
 | `Ctrl+E` | Export to a file |
@@ -112,7 +113,7 @@ assumed — is documented in **[docs/FORMAT.md](docs/FORMAT.md)**.
 ## Building
 
 ```powershell
-dotnet test                 # 110 tests, no NVIDIA install needed
+dotnet test                 # 131 tests, no NVIDIA install needed
 dotnet run --project tools/NvFilterStudio.Cli -- show
 dotnet build -c Release
 ```

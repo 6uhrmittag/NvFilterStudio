@@ -28,7 +28,7 @@ implementation lives at
 | `src/NvFilterStudio.Core` | The whole store format. **No UI dependency.** All tests target this. |
 | `src/NvFilterStudio.App` | WPF app, MVVM via CommunityToolkit.Mvvm |
 | `tools/NvFilterStudio.Cli` | Console harness — the fastest way to check something against a real store |
-| `tests/NvFilterStudio.Core.Tests` | xUnit. 110 tests, no NVIDIA install needed |
+| `tests/NvFilterStudio.Core.Tests` | xUnit. 131 tests, no NVIDIA install needed |
 
 ## Commands
 

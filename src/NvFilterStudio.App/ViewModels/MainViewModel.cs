@@ -19,6 +19,18 @@ public sealed partial class MainViewModel : ObservableObject
 {
     private readonly FilterCatalogue _catalogue = new();
     private readonly DispatcherTimer _writeWatch;
+    private readonly EditHistory _history = new();
+
+    /// <summary>
+    /// Whether a run of slider edits has already been recorded.
+    /// </summary>
+    /// <remarks>
+    /// Dragging a slider raises a change per tick, so recording each would
+    /// bury everything else in history and make undo useless. A continuous
+    /// run of value edits collapses into one step, reset by any structural
+    /// change or by moving to another slot.
+    /// </remarks>
+    private bool _valueEditRecorded;
 
     private StoreLocator _locator = new();
     private StoreSnapshot? _snapshot;
@@ -181,6 +193,9 @@ public sealed partial class MainViewModel : ObservableObject
             SelectedGame = Games.FirstOrDefault(g => g.Groups()
                 .Any(gr => gr.Slots.Any(s => s.FilterCount > 0))) ?? Games.FirstOrDefault();
 
+            _history.Clear();
+            _valueEditRecorded = false;
+            RefreshHistoryFlags();
             HasUnsavedChanges = false;
             Status = $"Loaded {Games.Count} game{(Games.Count == 1 ? string.Empty : "s")} ♡";
         }
@@ -221,7 +236,13 @@ public sealed partial class MainViewModel : ObservableObject
         SelectedSlot = Slots.FirstOrDefault(s => s.Slot.FilterCount > 0) ?? Slots.FirstOrDefault();
     }
 
-    partial void OnSelectedSlotChanged(SlotOption? value) => RebuildFilters();
+    partial void OnSelectedSlotChanged(SlotOption? value)
+    {
+        // Editing a different slot is a different action, so it starts a new
+        // undo step rather than joining the previous one.
+        _valueEditRecorded = false;
+        RebuildFilters();
+    }
 
     private void RebuildFilters()
     {
@@ -277,8 +298,96 @@ public sealed partial class MainViewModel : ObservableObject
     private void ToggleTheme() =>
         ThemeGlyph = Themes.ThemeManager.Toggle() == Themes.AppTheme.Dark ? "☀" : "☽";
 
+    /// <summary>Whether a step can be undone.</summary>
+    [ObservableProperty]
+    private bool _canUndo;
+
+    /// <summary>Whether a step can be redone.</summary>
+    [ObservableProperty]
+    private bool _canRedo;
+
+    /// <summary>
+    /// Records the current state before a change is made.
+    /// </summary>
+    /// <param name="description">
+    /// What is about to happen, phrased so it reads after "Undid".
+    /// </param>
+    private void RecordUndo(string description)
+    {
+        if (_document is null)
+        {
+            return;
+        }
+
+        _history.Record(Snapshot(description));
+        RefreshHistoryFlags();
+
+        // Whatever run of slider edits was in progress is now its own step.
+        _valueEditRecorded = false;
+    }
+
+    private EditSnapshot Snapshot(string description) =>
+        new(_document!.ToJson(), SelectedGame?.ExePath, SelectedSlot?.Slot.Id, description);
+
+    private void RefreshHistoryFlags()
+    {
+        CanUndo = _history.CanUndo;
+        CanRedo = _history.CanRedo;
+        UndoCommand.NotifyCanExecuteChanged();
+        RedoCommand.NotifyCanExecuteChanged();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUndo))]
+    private void Undo() => Restore(_history.Undo(Snapshot("redo")), undoing: true);
+
+    [RelayCommand(CanExecute = nameof(CanRedo))]
+    private void Redo() => Restore(_history.Redo(Snapshot("undo")), undoing: false);
+
+    /// <summary>
+    /// Replaces the document with a snapshot and rebuilds the view around it.
+    /// </summary>
+    /// <remarks>
+    /// Everything on screen holds references into the old document, so the
+    /// selection has to be re-resolved by identity - executable path and slot
+    /// id - rather than by object. Skipping that leaves the UI editing a
+    /// document that is no longer the one which will be saved.
+    /// </remarks>
+    private void Restore(EditSnapshot? snapshot, bool undoing)
+    {
+        if (snapshot is null || _document is null)
+        {
+            return;
+        }
+
+        _document = FilterPresetDocument.Parse(snapshot.Json);
+
+        Games.Clear();
+        foreach (GameProfile game in _document.Games())
+        {
+            Games.Add(game);
+        }
+
+        SelectedGame = Games.FirstOrDefault(g => g.ExePath == snapshot.GameExePath) ?? Games.FirstOrDefault();
+        if (snapshot.SlotId is { } slotId)
+        {
+            SelectedSlot = Slots.FirstOrDefault(s => s.Slot.Id == slotId) ?? SelectedSlot;
+        }
+
+        RebuildFilters();
+        RefreshHistoryFlags();
+
+        HasUnsavedChanges = true;
+        Status = undoing ? $"Undid {snapshot.Description}." : $"Redid {snapshot.Description}.";
+    }
+
     private void MarkDirty()
     {
+        if (!_valueEditRecorded)
+        {
+            RecordUndo("your slider changes");
+            _valueEditRecorded = true;
+        }
+
         HasUnsavedChanges = true;
         Status = "Edited — not applied yet.";
     }
@@ -316,6 +425,7 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
+        RecordUndo($"moving {filter.Name} earlier");
         SelectedSlot.Slot.MoveFilter(filter.Order, filter.Order - 1);
         RebuildFilters();
         MarkDirty();
@@ -329,6 +439,7 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
+        RecordUndo($"moving {filter.Name} later");
         SelectedSlot.Slot.MoveFilter(filter.Order, filter.Order + 1);
         RebuildFilters();
         MarkDirty();
@@ -342,6 +453,7 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
+        RecordUndo($"removing {filter.Name}");
         SelectedSlot.Slot.RemoveFilterAt(filter.Order);
         RebuildFilters();
         MarkDirty();
@@ -351,7 +463,13 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ResetFilter(FilterViewModel? filter)
     {
-        filter?.ResetAll();
+        if (filter is null)
+        {
+            return;
+        }
+
+        RecordUndo($"resetting {filter.Name}");
+        filter.ResetAll();
         MarkDirty();
     }
 
@@ -373,6 +491,7 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             string added = FilterToAdd.DisplayName;
+            RecordUndo($"adding {added}");
             SelectedSlot.Slot.AddFilter(skeleton);
             RebuildFilters();
             MarkDirty();
@@ -465,6 +584,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         try
         {
+            RecordUndo("the import");
             int applied = ImportPlan.ApplyFile(File.ReadAllText(dialog.FileName), _document!, _catalogue);
             RebuildFilters();
             MarkDirty();
@@ -510,6 +630,7 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             SharedPreset preset = ShareCode.Decode(Clipboard.GetText());
+            RecordUndo("pasting a share code");
             ImportPlan.ApplyShared(preset, SelectedSlot.Slot, _catalogue, out IReadOnlyList<string> missing);
 
             RebuildFilters();

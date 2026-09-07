@@ -11,6 +11,8 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.InputBindings>
+        <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}" />
+        <KeyBinding Key="Y" Modifiers="Ctrl" Command="{Binding RedoCommand}" />
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding ApplyCommand}" />
         <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ReloadCommand}" />
         <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding ExportFileCommand}" />
@@ -85,7 +87,13 @@
                     </ComboBox>
                     <Button Content="↻" Style="{StaticResource TinyButton}" Margin="10,0,0,0"
                             AutomationProperties.Name="Re-read filters from NVIDIA"
-                            Command="{Binding ReloadCommand}" ToolTip="Re-read from NVIDIA" />
+                            Command="{Binding ReloadCommand}" ToolTip="Re-read from NVIDIA (Ctrl+R)" />
+                    <Button Content="↶" Style="{StaticResource TinyButton}" Margin="12,0,0,0"
+                            AutomationProperties.Name="Undo the last change"
+                            Command="{Binding UndoCommand}" ToolTip="Undo (Ctrl+Z)" />
+                    <Button Content="↷" Style="{StaticResource TinyButton}" Margin="6,0,0,0"
+                            AutomationProperties.Name="Redo the last undone change"
+                            Command="{Binding RedoCommand}" ToolTip="Redo (Ctrl+Y)" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
