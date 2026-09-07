@@ -82,6 +82,18 @@ Each slot holds `filterStack.filters[]`:
   normalised float the shader receives. Measured relation:
   `currentValue = (maxValue - minValue) * (uiValue - uiMinValue) / (uiMaxValue - uiMinValue) + minValue`.
   Read the bounds from the control rather than assuming ±100.
+- **The control metadata is authoritative — the overlay does not re-derive it.**
+  A filter written into a slot with deliberately wrong bounds (`minValue 0`,
+  `maxValue 5`, `uiMinValue -50`, `uiMaxValue 250`, `uiStepSize 7`) rendered
+  using exactly those numbers, and the invented `displayName` was kept too.
+  Adding a filter therefore requires real per-control metadata; a name and a
+  control count are not enough.
+- **Sliders snap to `uiMinValue + k × uiStepSize`.** The grid is anchored at
+  `uiMinValue`, and the reachable maximum is the last grid point at or below
+  `uiMaxValue` — a control declaring `-50..250` step 7 topped out at 244. A
+  stored value off that grid displays correctly but jumps to the nearest grid
+  point as soon as the user touches the slider, and cannot then be restored
+  from NVIDIA's UI.
 - **A slider's stable identity is (shader basename, control `id`).**
   `displayName` is localised to the App's UI language. On the test machine it is
   German, and NVIDIA has a localisation bug where `Adjustments.fx` control 2 is
@@ -267,6 +279,7 @@ The write lands when the overlay closes, not on slider release.
 | Compacted stores work | Against the real post-compaction store (`000004.log` + 975 KB `000005.ldb`): export picked the live value from the log rather than a stale table copy, import chose sequence 11 732 from `max(log 11 731, manifest 11 406)`, and the read-back changed exactly one value |
 | `.ldb` tables are parsed, not scanned | The 975 KB `000005.ldb` decodes to 11 400 entries, highest sequence 11 399, of which 89 are `filterPresets` records; the newest (seq 11 384) yields the same 9 092-character document the log holds. Blocks are a mix of uncompressed and **Snappy** — the uncompressed ones are why a plain byte scan saw JSON at all |
 | The GUI's Apply writes a real store | Driven through its own UI: slot 3 `Details.fx` Sharpen 10 → 37 → 10 over two applies, value version 48 → 49 → 50, one value changed each time and the pre-write backup decoded to the original |
+| A fabricated filter node is accepted | `NightMode.fx`, never previously in any slot, was written into empty slot 2 with one control and deliberately wrong bounds. The overlay rendered it, honoured every wrong number, kept the invented `displayName`, and wrote the node back with only `currentValue`, `currentUIValue` and `isExpanded` changed |
 
 ## Not proven
 
