@@ -33,10 +33,20 @@ software and sits next to games with kernel anti-cheat.
 The raw NVIDIA store contains a **43-character NVIDIA account identifier and
 session GUIDs**. Two consequences:
 
-- Exports produced by this app contain neither. They are safe to share, and a
-  test asserts it.
+- Exports produced by this app contain neither, and a test asserts it.
+- Your Windows account name is kept out of them too: the store sits under
+  `%LOCALAPPDATA%`, so the path recorded in an export is written back as
+  `%LOCALAPPDATA%\…` rather than `C:\Users\<you>\…`. Also asserted by a test.
 - **Never attach raw `.log` or `.ldb` files to an issue.** If a maintainer asks
   for store internals, they will ask for specific fields.
+
+One thing an export *does* carry: the **install path of each game** it covers,
+because importing matches profiles on that path. Those are normally somewhere
+like `C:\Program Files (x86)\Steam\…`, but a game installed under your user
+folder would show your account name there. Worth a glance before posting an
+export publicly. A **share code** carries no paths at all — only which filters,
+in what order, at what values, plus the game's display name — so it is the safer
+thing to paste into a chat.
 
 Backups written to `%LOCALAPPDATA%\NvFilterStudio\backups\` are raw copies and
 therefore *do* contain those identifiers. They stay on your machine; do not

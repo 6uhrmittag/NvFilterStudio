@@ -257,7 +257,7 @@ public static class ExportDocument
         var sourceNode = new JsonObject();
         foreach ((string key, string value) in source ?? new Dictionary<string, string>())
         {
-            sourceNode[key] = value;
+            sourceNode[key] = RedactUserPath(value);
         }
 
         var root = new JsonObject
@@ -269,6 +269,47 @@ public static class ExportDocument
         };
 
         return root.ToJsonString(WriteOptions);
+    }
+
+    /// <summary>
+    /// Replaces the user's own profile directory with the variable that names it.
+    /// </summary>
+    /// <remarks>
+    /// Exports exist to be sent to other people, and the store lives under
+    /// <c>%LOCALAPPDATA%</c> — so recording its literal path put the sender's
+    /// Windows account name in every file they shared. The path is worth keeping
+    /// for diagnostics; the account name is not.
+    /// <para>
+    /// Applied here rather than at the call site so it cannot be forgotten by a
+    /// future caller: everything written into <c>source</c> goes through it.
+    /// </para>
+    /// </remarks>
+    internal static string RedactUserPath(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        // Longest first: LocalApplicationData sits inside the profile, so
+        // replacing the profile first would leave the more specific one unmatched.
+        foreach ((Environment.SpecialFolder folder, string name) in (
+            (Environment.SpecialFolder, string)[])
+            [
+                (Environment.SpecialFolder.LocalApplicationData, "%LOCALAPPDATA%"),
+                (Environment.SpecialFolder.ApplicationData, "%APPDATA%"),
+                (Environment.SpecialFolder.UserProfile, "%USERPROFILE%"),
+            ])
+        {
+            string path = Environment.GetFolderPath(folder);
+
+            if (path.Length > 0 && value.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+            {
+                return string.Concat(name, value.AsSpan(path.Length));
+            }
+        }
+
+        return value;
     }
 
     private static JsonObject BuildGroup(SlotGroup group)

@@ -5,6 +5,15 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Exports no longer contain your Windows account name.** The store lives
+  under `%LOCALAPPDATA%`, and the path recorded in every export was the literal
+  one — so a file whose entire purpose is being sent to someone else carried the
+  sender’s user name. It is now written back as `%LOCALAPPDATA%\…`.
+  `SECURITY.md` claimed exports were safe to share *and that a test asserted*
+  it; neither was true, and both now are
+
 ## [0.2.1] — 2026-09-07
 
 ### Added
