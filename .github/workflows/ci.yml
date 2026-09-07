@@ -123,6 +123,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # Provenance attestation: id-token signs through Sigstore, attestations
+      # publishes the result. Both are free on a public repository.
+      id-token: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v5
@@ -145,6 +149,25 @@ jobs:
         # a digest server-side but never shows it beside the download.
         working-directory: dist
         run: sha256sum NvFilterStudio.exe nvfs.exe | tee SHA256SUMS.txt
+
+      - name: Attest build provenance
+        # The binaries are unsigned, so a checksum only proves the download was
+        # not corrupted - it says nothing about where the file came from, and it
+        # is published by whoever published the binary. This is signed evidence
+        # that these exact bytes came out of this workflow, at this commit, and
+        # anyone can check it with:
+        #   gh attestation verify NvFilterStudio.exe --repo <owner>/<repo>
+        #
+        # Before the release step on purpose: attesting afterwards could leave a
+        # published release with no provenance if this fails.
+        #
+        # SHA256SUMS.txt is deliberately not a subject - it is derived from these
+        # two files, so attesting it adds a subject without adding an assurance.
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            dist/NvFilterStudio.exe
+            dist/nvfs.exe
 
       - name: Take the release notes from the changelog
         # generate_release_notes on its own produces a bare commit list, which

@@ -47,10 +47,34 @@ upload them.
 Release binaries are not code-signed, so Windows SmartScreen warns on first run.
 Code signing needs a paid certificate.
 
-Until that changes, the meaningful defence is that the build is reproducible in
-public: every release is produced by
+Until that changes, the meaningful defence is that the build is public and
+checkable: every release is produced by
 [the CI workflow](.github/workflows/ci.yml) from a tagged commit, on a GitHub
 runner, and you can build the same thing yourself with `dotnet publish`.
+
+You do not have to take that on trust. Every release asset carries a
+[build provenance attestation](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds),
+signed through Sigstore, which you can verify yourself:
+
+````powershell
+gh attestation verify NvFilterStudio.exe --repo 6uhrmittag/NvFilterStudio
+````
+
+That confirms the exact bytes you downloaded came out of this repository's
+workflow at a known commit — not merely that the download arrived intact.
+
+The two checks answer different questions and neither replaces the other:
+
+| | Proves |
+|---|---|
+| `SHA256SUMS.txt` | the file was not altered in transit or storage |
+| Attestation | the file was built by this repository's CI, from a known commit |
+
+The checksum needs no tools; the attestation needs the
+[GitHub CLI](https://cli.github.com/).
+
+Neither is a substitute for code signing, and neither stops the SmartScreen
+warning.
 
 ## Supported versions
 

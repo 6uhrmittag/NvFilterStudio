@@ -115,11 +115,25 @@ crash reporting. It has two dependencies, `CommunityToolkit.Mvvm` and `Snappier`
 (a decompressor), neither of which opens a socket. The only thing it ever
 launches is Explorer, when you click the backups link.
 
-Every release ships `SHA256SUMS.txt`, so you can check the download:
+Every release ships `SHA256SUMS.txt`, so you can check the download arrived
+intact:
 
 ````powershell
 Get-FileHash .\NvFilterStudio.exe -Algorithm SHA256
 ````
+
+And every release asset is **provenance-attested**, which is the stronger check —
+a checksum only tells you the file did not change on the way to you, whereas this
+tells you where it came from:
+
+````powershell
+gh attestation verify .\NvFilterStudio.exe --repo 6uhrmittag/NvFilterStudio
+````
+
+That confirms the exact bytes were built by this repository's CI from a specific
+commit. It needs the [GitHub CLI](https://cli.github.com/); the checksum needs
+nothing. Neither replaces code signing (see
+[Releases are unsigned](SECURITY.md#releases-are-unsigned)).
 
 ## How it works
 

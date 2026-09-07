@@ -5,6 +5,17 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-09-07
+
+### Added
+
+- Every release asset now carries a **build provenance attestation** (#36),
+  signed through Sigstore. `gh attestation verify NvFilterStudio.exe --repo
+  6uhrmittag/NvFilterStudio` confirms the exact bytes came out of this
+  repository's CI at a known commit. The checksums only ever proved a download
+  arrived intact, which is a weaker claim and one made by whoever published the
+  binary
+
 ### Fixed
 
 - Apply no longer enables itself and then refuses (#33). The button asked only
