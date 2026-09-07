@@ -125,6 +125,8 @@ jobs:
       contents: write
 
     steps:
+      - uses: actions/checkout@v5
+
       - name: Download application
         uses: actions/download-artifact@v5
         with:
@@ -137,10 +139,50 @@ jobs:
           name: nvfs-cli-win-x64
           path: dist
 
+      - name: Checksum the binaries
+        # These are unsigned executables downloaded from a stranger, so there
+        # has to be something to check them against out of band. GitHub records
+        # a digest server-side but never shows it beside the download.
+        working-directory: dist
+        run: sha256sum NvFilterStudio.exe nvfs.exe | tee SHA256SUMS.txt
+
+      - name: Take the release notes from the changelog
+        # generate_release_notes on its own produces a bare commit list, which
+        # says nothing about why anyone should upgrade. The changelog already
+        # says it, so use that as the body and let the generated list follow
+        # underneath rather than keeping a second copy by hand.
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+
+          # A literal prefix match rather than a regex built from the version:
+          # the dots would be wildcards and the brackets need escaping that awk
+          # warns about, and getting it subtly wrong yields an empty file rather
+          # than an error.
+          awk -v heading="## [$version]" '
+            index($0, heading) == 1 { found = 1; next }
+            found && /^## \[/       { exit }
+            found                   { print }
+          ' CHANGELOG.md > notes.md
+
+          if [ ! -s notes.md ]; then
+            echo "No CHANGELOG section for [$version] - add one before tagging." >&2
+            exit 1
+          fi
+
+          cat notes.md
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/NvFilterStudio.exe
             dist/nvfs.exe
+            dist/SHA256SUMS.txt
+          body_path: notes.md
           generate_release_notes: true
+          # Everything here is verified on one machine, one GPU and one driver
+          # version, and has never been through a driver update. Saying so in
+          # the release notes while the flag claims otherwise would be the flag
+          # winning.
+          prerelease: true

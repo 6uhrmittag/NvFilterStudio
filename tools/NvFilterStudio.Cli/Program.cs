@@ -1,4 +1,5 @@
 using System.Globalization;
+using NvFilterStudio.Core;
 using NvFilterStudio.Core.LevelDb;
 using NvFilterStudio.Core.Model;
 using NvFilterStudio.Core.Store;
@@ -168,6 +169,11 @@ internal static class Program
 
     private static void Status(StoreLocator locator)
     {
+        // First line, because the bug report form asks people to paste this
+        // output, and a report that cannot name its own build is much harder
+        // to act on - especially with master builds and tagged releases in
+        // circulation at the same time.
+        Console.WriteLine($"nvfs       : {BuildInfo.Version}");
         Console.WriteLine($"store      : {locator.Directory}");
         Console.WriteLine($"exists     : {locator.Exists}");
         Console.WriteLine($"live store : {locator.IsLiveStore}");

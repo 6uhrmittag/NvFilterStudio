@@ -27,7 +27,7 @@
     <!-- Overridden from the git tag on tag builds; see .github/workflows/ci.yml.
          Without a version the published .exe has blank Properties fields and a
          bug report cannot name the build it came from. -->
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.2.0</VersionPrefix>
 
     <Authors>6uhrmittag</Authors>
     <Product>NvFilterStudio</Product>

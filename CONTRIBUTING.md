@@ -56,7 +56,7 @@ name of its own.
 ## Building
 
 ```powershell
-dotnet test          # 184 tests, no NVIDIA install required
+dotnet test          # 187 tests, no NVIDIA install required
 dotnet build
 dotnet run --project tools/NvFilterStudio.Cli -- status
 ```

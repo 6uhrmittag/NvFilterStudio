@@ -5,6 +5,13 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-09-07
+
+**Upgrade if you are on 0.1.0.** That build crashes on any store containing a
+filter with an on/off control — `Auto Depth of Field`, `Black and White`,
+`Depth of Field` and `Splitscreen` all have one — because reading it threw and
+took the whole document with it.
+
 ### Added
 
 - The slot selector is tiles rather than pills. The window reserves the pill

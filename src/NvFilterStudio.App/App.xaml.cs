@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
+using NvFilterStudio.Core;
 
 namespace NvFilterStudio.App;
 
@@ -94,7 +95,7 @@ public partial class App : Application
                 $"crash-{DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture)}.log");
 
             var report = new StringBuilder()
-                .AppendLine(CultureInfo.InvariantCulture, $"NvFilterStudio {AppInfo.Version}")
+                .AppendLine(CultureInfo.InvariantCulture, $"NvFilterStudio {BuildInfo.Version}")
                 .AppendLine(CultureInfo.InvariantCulture, $"{DateTimeOffset.Now:O}")
                 .AppendLine(CultureInfo.InvariantCulture, $"OS {Environment.OSVersion}")
                 .AppendLine()

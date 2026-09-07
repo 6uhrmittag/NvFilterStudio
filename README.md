@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/6uhrmittag/NvFilterStudio/actions/workflows/ci.yml/badge.svg)](https://github.com/6uhrmittag/NvFilterStudio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-FFB7C5.svg)](LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/6uhrmittag/NvFilterStudio?include_prereleases&color=C8B6E2)](https://github.com/6uhrmittag/NvFilterStudio/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/6uhrmittag/NvFilterStudio?include_prereleases&color=C8B6E2)](https://github.com/6uhrmittag/NvFilterStudio/releases)
 
 Back up, edit and share your **NVIDIA game filters**.
 
@@ -11,6 +11,13 @@ a driver update can wipe them. Tune a look you love, lose it, and there is no
 way to get it back — or to send it to a friend. This fixes that.
 
 > ⚠️ **Not affiliated with NVIDIA.** Independent tool, MIT licensed.
+
+**Will this get me banned?** No. It edits **NVIDIA's own settings file** — the
+same one the NVIDIA App writes when you drag a slider in the overlay — while
+your game is closed. It never injects into a game, hooks a process, or draws an
+overlay, and it does not run while you play. It is not ReShade and it is not a
+mod: everything it writes, NVIDIA's own UI could have written. See
+[Is this safe?](#is-this-safe).
 
 | Light | Dark |
 |---|---|
@@ -27,7 +34,7 @@ way to get it back — or to send it to a friend. This fixes that.
 ## Getting started
 
 Download `NvFilterStudio.exe` from the
-[latest release](https://github.com/6uhrmittag/NvFilterStudio/releases/latest)
+[latest release](https://github.com/6uhrmittag/NvFilterStudio/releases)
 and run it. No installer, nothing to configure, and .NET is bundled — which is
 why it is around 60 MB.
 
@@ -91,14 +98,28 @@ used those filters.
 
 It writes to one key in NVIDIA's own settings database, and:
 
+- **never touches a game process.** No injection, no hooking, no DLL proxying,
+  no overlay. It cannot run while a game does, because writing needs the NVIDIA
+  Overlay switched off. Anti-cheat has nothing to look at.
 - takes a timestamped backup first, and **checks the backup decodes** rather
   than assuming the copy worked
 - refuses to write while NVIDIA is running, rather than writing into the void
-- never touches a game process, so it has nothing to do with anti-cheat
 - keeps your NVIDIA account id out of every export
 - works whatever language your NVIDIA App is in
 
-Backups live in `%LOCALAPPDATA%\NvFilterStudio\backups`.
+Backups live in `%LOCALAPPDATA%\NvFilterStudio\backups`, and the app shows how
+much space they use.
+
+**It makes no network connections at all** — no telemetry, no update check, no
+crash reporting. It has two dependencies, `CommunityToolkit.Mvvm` and `Snappier`
+(a decompressor), neither of which opens a socket. The only thing it ever
+launches is Explorer, when you click the backups link.
+
+Every release ships `SHA256SUMS.txt`, so you can check the download:
+
+````powershell
+Get-FileHash .\NvFilterStudio.exe -Algorithm SHA256
+````
 
 ## How it works
 
@@ -113,7 +134,7 @@ assumed — is documented in **[docs/FORMAT.md](docs/FORMAT.md)**.
 ## Building
 
 ```powershell
-dotnet test                 # 184 tests, no NVIDIA install needed
+dotnet test                 # 187 tests, no NVIDIA install needed
 dotnet run --project tools/NvFilterStudio.Cli -- show
 dotnet build -c Release
 ```

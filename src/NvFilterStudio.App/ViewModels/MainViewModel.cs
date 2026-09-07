@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using NvFilterStudio.Core;
 using NvFilterStudio.Core.Catalogue;
 using NvFilterStudio.Core.Model;
 using NvFilterStudio.Core.Share;
@@ -116,7 +117,7 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>
     /// Build version, shown in the header so a screenshot identifies its build.
     /// </summary>
-    public string DisplayVersion => $"v{AppInfo.ShortVersion}";
+    public string DisplayVersion => $"v{BuildInfo.ShortVersion}";
 
     /// <summary>
     /// How much disk the automatic backups are using.
