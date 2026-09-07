@@ -92,6 +92,17 @@ Each slot holds `filterStack.filters[]`:
   scales are simply identical, so the conversion is an identity.
 - **A boolean control has no recorded default**, so there is nothing to reset it
   to.
+- **Names are cosmetic and never auto-populated.** A control with its
+  `displayName` key deleted, and one with it set to `""`, both render as a
+  working slider with a blank label — the two cases are indistinguishable. A
+  filter with its own `name` deleted still loads and activates, with a blank row
+  title. The overlay has the strings (the `.acef` effects carry each label in
+  some fifteen languages) but does not reach for them when the field is missing.
+- **The overlay's "active filters" list is not just this store.** It also shows
+  *RTX HDR* and *RTX Dynamic Vibrance*, which are driver-level features — the
+  string `RTX` does not appear anywhere in the document. Expect the overlay's
+  active count to exceed a slot's `filters` length, and do not try to find them
+  here.
 - **The control metadata is authoritative — the overlay does not re-derive it.**
   A filter written into a slot with deliberately wrong bounds (`minValue 0`,
   `maxValue 5`, `uiMinValue -50`, `uiMaxValue 250`, `uiStepSize 7`) rendered
@@ -311,6 +322,7 @@ The write lands when the overlay closes, not on slider release.
 | `.ldb` tables are parsed, not scanned | The 975 KB `000005.ldb` decodes to 11 400 entries, highest sequence 11 399, of which 89 are `filterPresets` records; the newest (seq 11 384) yields the same 9 092-character document the log holds. Blocks are a mix of uncompressed and **Snappy** — the uncompressed ones are why a plain byte scan saw JSON at all |
 | The GUI's Apply writes a real store | Driven through its own UI: slot 3 `Details.fx` Sharpen 10 → 37 → 10 over two applies, value version 48 → 49 → 50, one value changed each time and the pre-write backup decoded to the original |
 | A fabricated filter node is accepted | `NightMode.fx`, never previously in any slot, was written into empty slot 2 with one control and deliberately wrong bounds. The overlay rendered it, honoured every wrong number, kept the invented `displayName`, and wrote the node back with only `currentValue`, `currentUIValue` and `isExpanded` changed |
+| A compacted store round-trips through the UI | After the store compacted (`000004.log` → `000010.log`, with `000009.ldb` and `000011.ldb` appearing), a write into the new log was confirmed in the overlay's own UI — the previously missing half of this proof, which had only ever been verified by read-back |
 
 ## Not proven
 
@@ -321,10 +333,6 @@ The write lands when the overlay closes, not on slider release.
   touch LevelDB *scopes* bookkeeping (an undo journal) in the same batch. That
   is crash-recovery state for in-flight transactions, so a bare put should be
   harmless — an assumption, not a verified fact.
-- A compacted-store import has been verified by read-back, but **not yet
-  confirmed in the App's UI**. The UI confirmation was done pre-compaction. The
-  sequence-number reasoning says it will hold; that is not the same as having
-  seen it.
 - Table *writing* is not implemented. Compaction is left entirely to LevelDB;
   this project only ever appends to the log.
 - Writing only appends to the log; it never writes tables.
@@ -332,11 +340,6 @@ The write lands when the overlay closes, not on slider release.
   against a real non-Latin-1 NVIDIA App.
 - The English control names are translations of German labels, not text seen in
   an English NVIDIA App. Ids and counts are observed; the wording is not.
-- Whether the overlay would supply its own localised `displayName` if a written
-  filter node omitted one. The `.acef` effects carry the label in some fifteen
-  languages, so it plausibly can — but #12 proved it honours a `displayName`
-  that *is* present, and omitting one has never been tried. This decides whether
-  a shipped filter catalogue can be language-neutral.
 - One machine, one driver, one App version (see *Verified on*).
 
 ## Ruled out
