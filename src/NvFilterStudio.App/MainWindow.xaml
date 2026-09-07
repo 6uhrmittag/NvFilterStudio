@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:NvFilterStudio.App.ViewModels"
+        xmlns:behaviors="clr-namespace:NvFilterStudio.App.Behaviors"
         Title="NvFilterStudio"
         Icon="Assets/app.ico"
         Width="900" Height="740"
@@ -99,10 +100,8 @@
                          mode should be findable without being pickable by
                          accident. -->
                     <CheckBox Content="photo mode" Margin="16,0,0,0" VerticalAlignment="Center"
+                              Style="{StaticResource SoftCheck}"
                               IsChecked="{Binding ShowPhotoMode}"
-                              Foreground="{DynamicResource InkSoftBrush}"
-                              FontFamily="{StaticResource UiFont}"
-                              FontSize="{StaticResource SmallSize}"
                               AutomationProperties.Name="Show photo mode (Ansel) slots instead of game filters"
                               ToolTip="Show the Ansel photo-mode slots instead of the game filter slots" />
                 </StackPanel>
@@ -191,9 +190,8 @@
                                     <StackPanel>
                                         <Grid>
                                             <StackPanel Orientation="Horizontal">
-                                                <Border Background="{DynamicResource LavenderBrush}"
-                                                        CornerRadius="{StaticResource PillRadius}"
-                                                        Padding="10,2" VerticalAlignment="Center">
+                                                <Border Style="{StaticResource Badge}"
+                                                        Background="{DynamicResource LavenderBrush}">
                                                     <TextBlock Text="{Binding Order}" Style="{StaticResource BodyText}"
                                                                FontWeight="SemiBold" />
                                                 </Border>
@@ -202,9 +200,8 @@
                                                            VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding Shader}" Style="{StaticResource HintText}"
                                                            Margin="8,0,0,0" VerticalAlignment="Center" />
-                                                <Border Background="{DynamicResource ButterBrush}"
-                                                        CornerRadius="{StaticResource PillRadius}"
-                                                        Padding="8,2" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                <Border Style="{StaticResource Badge}"
+                                                        Padding="8,2" Margin="8,0,0,0"
                                                         ToolTip="These sliders aren't named yet. The values are still correct."
                                                         Visibility="{Binding HasUnmappedControls,
                                                                      Converter={StaticResource TrueToVisible}}">
@@ -251,12 +248,20 @@
                                                 <DataTemplate DataType="{x:Type vm:ControlViewModel}">
                                                     <Grid Margin="0,3">
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="175" />
+                                                            <ColumnDefinition Width="14" />
+                                                            <ColumnDefinition Width="161" />
                                                             <ColumnDefinition Width="*" />
                                                             <ColumnDefinition Width="Auto" />
                                                         </Grid.ColumnDefinitions>
 
-                                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                        <!-- Its own column rather than inline with the label,
+                                                             so the dot appearing does not shift the name. -->
+                                                        <Ellipse Grid.Column="0"
+                                                                 Style="{StaticResource ModifiedDot}"
+                                                                 Visibility="{Binding IsModified,
+                                                                              Converter={StaticResource TrueToVisible}}" />
+
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding Name}"
                                                                        Style="{StaticResource BodyText}" />
                                                             <TextBlock Text="{Binding SecondaryLabel}"
@@ -265,14 +270,23 @@
                                                                                     Converter={StaticResource TextToVisible}}" />
                                                         </StackPanel>
 
-                                                        <Slider Grid.Column="1" Style="{StaticResource KawaiiSlider}"
+                                                        <!-- Snapped to the step grid. WPF anchors ticks at
+                                                             Minimum, which is uiMinValue, so this is exactly
+                                                             NVIDIA's own grid of uiMinValue + k x uiStepSize.
+                                                             Without it a drag produced values like 37.437 that
+                                                             the store then snapped to 37 - so the number shown
+                                                             and the number saved could genuinely differ. -->
+                                                        <Slider Grid.Column="2" Style="{StaticResource KawaiiSlider}"
                                                                 AutomationProperties.Name="{Binding Name}"
                                                                 Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                                                                 SmallChange="{Binding Step}" LargeChange="{Binding Step}"
+                                                                IsSnapToTickEnabled="True"
+                                                                TickFrequency="{Binding Step}"
+                                                                behaviors:SliderEase.Duration="0:0:0.15"
                                                                 Value="{Binding Value, Mode=TwoWay}"
                                                                 VerticalAlignment="Center" Margin="6,0" />
 
-                                                        <TextBox Grid.Column="2" Style="{StaticResource ValueBox}"
+                                                        <TextBox Grid.Column="3" Style="{StaticResource ValueBox}"
                                                                  AutomationProperties.Name="{Binding Name}"
                                                                  Text="{Binding ValueText, Mode=TwoWay,
                                                                         UpdateSourceTrigger=LostFocus}"
@@ -337,9 +351,8 @@
             </Grid>
 
             <StackPanel Orientation="Horizontal" Margin="4,10,0,0">
-                <Border Background="{DynamicResource ButterBrush}"
-                        CornerRadius="{StaticResource PillRadius}"
-                        Padding="10,2" Margin="0,0,10,0" VerticalAlignment="Center"
+                <Border Style="{StaticResource Badge}"
+                        Margin="0,0,10,0"
                         Visibility="{Binding HasUnsavedChanges, Converter={StaticResource TrueToVisible}}">
                     <TextBlock Text="unsaved changes" Style="{StaticResource HintText}"
                                Foreground="{DynamicResource InkBrush}" FontWeight="SemiBold" />

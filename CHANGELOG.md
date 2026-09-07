@@ -7,6 +7,14 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Redrawn sliders: a solid thumb on a 6px track instead of a 20px hollow ring
+  on a hairline, which read as floating above the track rather than gripping it
+- A tick on each slider marking NVIDIA's default, and a dot beside any control
+  that no longer holds it — with ten sliders on a filter, the only way to see
+  what you actually changed
+- Values eased rather than teleported when they change from outside the slider
+  (reset, import, a pasted share code)
+- Styled scrollbar and checkbox, the last two controls wearing system chrome
 - **A seed filter catalogue ships with the app** (#7), so adding a filter works
   on a fresh install rather than only for filters already used. All 18 filters
   and 73 controls, labelled in English — the overlay renders whatever
@@ -46,6 +54,15 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **The value box no longer clips.** It was 52px wide with centred text, so a
+  value like `100.25` was trimmed at *both* ends and read as `00.2` — a
+  plausible wrong number rather than an obviously truncated one. Now wider and
+  right-aligned, with a focus state it never had
+- **Sliders snap to NVIDIA's step grid.** A drag used to produce values like
+  `37.437`, which the store then snapped to `37` — so the number on screen and
+  the number saved could genuinely differ
+- Hovering **Apply to NVIDIA** used to fade it: it inherited the soft button's
+  hover, which paints the pale accent over the strong one
 - Filter definitions learned from the store now refresh a cached one instead of
   keeping the first sighting forever (#31). A definition could otherwise never
   be corrected — and since the overlay honours whatever bounds it is given, a

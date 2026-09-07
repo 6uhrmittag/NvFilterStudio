@@ -79,12 +79,28 @@ public sealed partial class ControlViewModel : ObservableObject
     /// <summary>Whether this differs from the filter's default.</summary>
     public bool IsModified => Math.Abs(Value - Default) > 0.0001;
 
+    /// <summary>Guards the write-back below from re-entering itself.</summary>
+    private bool _reconciling;
+
     partial void OnValueChanged(double value)
     {
         // Writing through the model keeps currentValue and currentValueArray in
         // step with currentUIValue; setting one alone leaves the record
         // internally inconsistent.
         _control.UiValue = value;
+
+        // The model snaps to NVIDIA's step grid, so what was asked for and what
+        // was stored can differ. Without adopting the stored value the UI would
+        // display a number the store does not hold - the exact silent mismatch
+        // this project keeps running into. The slider is snapped too, but it is
+        // not the only way in: typing a value and importing both land here.
+        if (!_reconciling && Math.Abs(_control.UiValue - value) > 1e-9)
+        {
+            _reconciling = true;
+            Value = _control.UiValue;
+            _reconciling = false;
+            return;
+        }
 
         OnPropertyChanged(nameof(ValueText));
         OnPropertyChanged(nameof(IsModified));

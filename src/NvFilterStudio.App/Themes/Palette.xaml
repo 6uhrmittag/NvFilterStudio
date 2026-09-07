@@ -52,9 +52,10 @@
     <CornerRadius x:Key="CardRadius">16</CornerRadius>
     <CornerRadius x:Key="ControlRadius">12</CornerRadius>
     <CornerRadius x:Key="PillRadius">999</CornerRadius>
-    <!-- Half the 8px track height. A pill radius larger than half the
-         element height makes WPF draw a tapered lens instead of a bar. -->
-    <CornerRadius x:Key="TrackRadius">4</CornerRadius>
+    <!-- Half the 6px track height. A pill radius larger than half the
+         element height makes WPF draw a tapered lens instead of a bar, so this
+         has to move whenever the track height does. -->
+    <CornerRadius x:Key="TrackRadius">3</CornerRadius>
     <Thickness x:Key="CardPadding">18</Thickness>
 
     <FontFamily x:Key="UiFont">Segoe UI Variable Display, Segoe UI, sans-serif</FontFamily>

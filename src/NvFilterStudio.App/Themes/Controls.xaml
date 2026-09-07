@@ -8,7 +8,14 @@
     from someone else's screenshot.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:NvFilterStudio.App.ViewModels">
+
+    <!-- Declared here rather than in MainWindow.xaml: a merged dictionary cannot
+         see the window's own resources, and the slider template below needs
+         these. -->
+    <vm:RatioToMarginConverter x:Key="RatioToMargin" />
+    <vm:RangeEndpointToVisibilityConverter x:Key="RatioToTickVisibility" />
 
     <Style x:Key="CardStyle" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource CardBrush}" />
@@ -53,12 +60,27 @@
                             CornerRadius="{StaticResource ControlRadius}"
                             Padding="{TemplateBinding Padding}"
                             BorderBrush="{DynamicResource EdgeBrush}"
-                            BorderThickness="1">
+                            BorderThickness="1"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Shell" Property="Background" Value="{DynamicResource BlushSoftBrush}" />
+                            <Setter TargetName="Shell" Property="BorderBrush" Value="{DynamicResource BlushBrush}" />
+                        </Trigger>
+                        <!-- The comment above promised a lift and there was never
+                             one: nothing moved on press, so a click that did
+                             nothing looked identical to a click that worked. -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Shell" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.97" ScaleY="0.97" />
+                                </Setter.Value>
+                            </Setter>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Shell" Property="Opacity" Value="0.45" />
@@ -70,11 +92,52 @@
         </Setter>
     </Style>
 
+    <!-- Retemplated rather than BasedOn SoftButton. Inheriting meant it also
+         inherited SoftButton's hover, which paints BlushSoftBrush - so hovering
+         the one strong call-to-action in the window *faded* it. -->
     <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource SoftButton}">
         <Setter Property="Background" Value="{DynamicResource BlushBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource InkOnAccentBrush}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="18,11" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Shell"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource ControlRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            BorderBrush="{DynamicResource BlushBrush}"
+                            BorderThickness="1"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Hover strengthens: a halo outside the fill, so the
+                             button gains presence instead of losing it. -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Shell" Property="BorderThickness" Value="3" />
+                            <Setter TargetName="Shell" Property="BorderBrush" Value="{DynamicResource BlushSoftBrush}" />
+                            <Setter TargetName="Shell" Property="Padding" Value="16,9" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Shell" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.97" ScaleY="0.97" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Shell" Property="Opacity" Value="0.45" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="TinyButton" TargetType="Button" BasedOn="{StaticResource SoftButton}">
@@ -83,19 +146,56 @@
         <Setter Property="MinWidth" Value="30" />
     </Style>
 
-    <!-- The signature control: chunky rounded thumb, soft track. -->
+    <!-- The signature control. A solid thumb riding a 6px track, rather than the
+         20px hollow ring on a hairline it used to be - at that ratio the ring
+         read as floating above the track instead of gripping it.
+
+         The faint tick is the control's NVIDIA default, so "back to neutral" is
+         findable without hunting for it. The Slider's DataContext is the
+         ControlViewModel, which is why `Default` resolves inside the template. -->
     <Style x:Key="KawaiiSlider" TargetType="Slider">
         <Setter Property="Height" Value="26" />
         <Setter Property="IsMoveToPointEnabled" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
-                    <Grid VerticalAlignment="Center">
-                        <Border Height="8"
+                    <Grid x:Name="Bed" VerticalAlignment="Center">
+                        <Border Height="6"
                                 CornerRadius="{StaticResource TrackRadius}"
                                 Background="{DynamicResource SunkenBrush}"
                                 BorderBrush="{DynamicResource EdgeBrush}"
                                 BorderThickness="1" />
+
+                        <!-- Default marker. Sits under the Track so the thumb
+                             covers it when the value is at the default, which is
+                             exactly when it has nothing left to say. -->
+                        <Border x:Name="DefaultTick"
+                                Width="2" Height="12"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                CornerRadius="1"
+                                Background="{DynamicResource InkSoftBrush}"
+                                Opacity="0.35"
+                                ToolTip="NVIDIA default">
+                            <Border.Margin>
+                                <MultiBinding Converter="{StaticResource RatioToMargin}">
+                                    <Binding ElementName="Bed" Path="ActualWidth" />
+                                    <Binding Path="Default" />
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Minimum" />
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Maximum" />
+                                </MultiBinding>
+                            </Border.Margin>
+                            <!-- Hidden when the default sits on an endpoint, where
+                                 it would only thicken the track's own edge. -->
+                            <Border.Visibility>
+                                <MultiBinding Converter="{StaticResource RatioToTickVisibility}">
+                                    <Binding Path="Default" />
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Minimum" />
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Maximum" />
+                                </MultiBinding>
+                            </Border.Visibility>
+                        </Border>
+
                         <Track x:Name="PART_Track">
                             <Track.DecreaseRepeatButton>
                                 <!-- The travelled part of the track is filled, so a value is
@@ -106,12 +206,10 @@
                                     <RepeatButton.Template>
                                         <ControlTemplate TargetType="RepeatButton">
                                             <Grid Background="Transparent">
-                                                <Border Height="8"
+                                                <Border Height="6"
                                                         VerticalAlignment="Center"
                                                         CornerRadius="{StaticResource TrackRadius}"
-                                                        Background="{DynamicResource BlushSoftBrush}"
-                                                        BorderBrush="{DynamicResource BlushBrush}"
-                                                        BorderThickness="1" />
+                                                        Background="{DynamicResource BlushBrush}" />
                                             </Grid>
                                         </ControlTemplate>
                                     </RepeatButton.Template>
@@ -130,12 +228,33 @@
                                 <Thumb x:Name="Grip">
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <Grid>
-                                                <Ellipse Width="20" Height="20"
-                                                         Fill="{DynamicResource CardBrush}"
-                                                         Stroke="{DynamicResource BlushBrush}"
-                                                         StrokeThickness="3" />
+                                            <Grid Background="Transparent">
+                                                <!-- Halo, not a DropShadowEffect: a shadow needs a
+                                                     Color, and the *Color keys are not theme-aware
+                                                     (ThemeManager rewrites only the *Brush keys), so
+                                                     it would stay a light-mode colour in dark mode. -->
+                                                <Ellipse x:Name="Halo"
+                                                         Width="26" Height="26"
+                                                         Fill="{DynamicResource BlushSoftBrush}"
+                                                         Opacity="0" />
+                                                <Ellipse x:Name="Core"
+                                                         Width="14" Height="14"
+                                                         Fill="{DynamicResource BlushBrush}"
+                                                         Stroke="{DynamicResource CardBrush}"
+                                                         StrokeThickness="2" />
                                             </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Core" Property="Width" Value="16" />
+                                                    <Setter TargetName="Core" Property="Height" Value="16" />
+                                                    <Setter TargetName="Halo" Property="Opacity" Value="0.55" />
+                                                </Trigger>
+                                                <Trigger Property="IsDragging" Value="True">
+                                                    <Setter TargetName="Core" Property="Width" Value="16" />
+                                                    <Setter TargetName="Core" Property="Height" Value="16" />
+                                                    <Setter TargetName="Halo" Property="Opacity" Value="0.85" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </Thumb.Template>
                                 </Thumb>
@@ -153,24 +272,54 @@
     </Style>
 
     <!-- Numeric field beside every slider: exact entry, monospace so digits
-         line up down the column. -->
+         line up down the column.
+
+         Sized for the widest value that can occur: `-100.25` is seven glyphs,
+         and `NumberFont` falls back from Cascadia Mono to Consolas on machines
+         without Windows Terminal, so the advance width is not fixed. At 52px
+         with 12px of padding there were 40px of text - about five glyphs - and
+         anything longer was clipped. 62px less 12px of padding leaves 50px,
+         which holds seven Consolas glyphs.
+
+         Right-aligned, not centred. Centring clipped an overflowing value at
+         *both* ends, turning `100.25` into something like `00.2`: a plausible
+         wrong number rather than an obviously truncated one. That is the worst
+         failure available to an app whose whole job is showing values the user
+         cannot otherwise check. -->
     <Style x:Key="ValueBox" TargetType="TextBox">
         <Setter Property="FontFamily" Value="{StaticResource NumberFont}" />
         <Setter Property="FontSize" Value="{StaticResource BodySize}" />
         <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
         <Setter Property="Background" Value="{DynamicResource SunkenBrush}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="52" />
+        <Setter Property="Width" Value="62" />
         <Setter Property="Padding" Value="6,4" />
-        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Right" />
+        <Setter Property="CaretBrush" Value="{DynamicResource BlushBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource BlushSoftBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
-                    <Border Background="{TemplateBinding Background}"
+                    <Border x:Name="Shell"
+                            Background="{TemplateBinding Background}"
                             CornerRadius="{StaticResource ControlRadius}"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}"
+                            BorderBrush="Transparent"
+                            BorderThickness="1">
                         <ScrollViewer x:Name="PART_ContentHost" />
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- There was no focus affordance at all: the style set
+                             BorderThickness but the template never bound it, so
+                             the setter was inert. -->
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Shell" Property="BorderBrush"
+                                    Value="{DynamicResource BlushBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Shell" Property="BorderBrush"
+                                    Value="{DynamicResource EdgeBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -270,27 +419,137 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SlotChip" TargetType="RadioButton">
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Margin" Value="0,0,8,0" />
+    <!-- Small pill label: the stack-order number, "unnamed sliders", "unsaved
+         changes". These were three near-identical inline Borders; only the
+         background ever differed, so that stays at the use site. -->
+    <Style x:Key="Badge" TargetType="Border">
+        <Setter Property="CornerRadius" Value="{StaticResource PillRadius}" />
+        <Setter Property="Padding" Value="10,2" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource ButterBrush}" />
+    </Style>
+
+    <!-- The one dot in the window that means something: this control no longer
+         holds NVIDIA's default. With ten sliders on a filter, it is the only way
+         to see what you actually changed. -->
+    <Style x:Key="ModifiedDot" TargetType="Ellipse">
+        <Setter Property="Width" Value="5" />
+        <Setter Property="Height" Value="5" />
+        <Setter Property="Fill" Value="{DynamicResource BlushBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="ToolTip" Value="Changed from the NVIDIA default" />
+    </Style>
+
+    <!-- Slim scrollbar. Applied by type rather than by key: the ones that show
+         are inside templated ScrollViewers (the filter list, the combo popup)
+         where there is no element to hang a key on, and a stock grey slab next
+         to all of the above was the last piece of system chrome left. -->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="RadioButton">
-                    <Border x:Name="Chip"
-                            Background="{DynamicResource SunkenBrush}"
-                            CornerRadius="{StaticResource PillRadius}"
-                            BorderBrush="{DynamicResource EdgeBrush}"
-                            BorderThickness="1"
-                            Padding="16,7">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="Transparent">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <!-- An inset rather than a fixed width, so
+                                                 the same template works in either
+                                                 orientation. -->
+                                            <Border x:Name="Bar"
+                                                    Margin="2"
+                                                    CornerRadius="3"
+                                                    Background="{DynamicResource EdgeBrush}" />
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bar" Property="Background"
+                                                            Value="{DynamicResource BlushBrush}" />
+                                                </Trigger>
+                                                <Trigger Property="IsDragging" Value="True">
+                                                    <Setter TargetName="Bar" Property="Background"
+                                                            Value="{DynamicResource BlushBrush}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <!-- A horizontal bar would otherwise be a 10px-wide
+                             vertical sliver. Nothing scrolls sideways today,
+                             but the template should not be a trap later. -->
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter Property="Width" Value="Auto" />
+                            <Setter Property="Height" Value="10" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The one control still wearing stock system chrome. -->
+    <Style x:Key="SoftCheck" TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+        <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSoftBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <Border x:Name="Box"
+                                Width="18" Height="18"
+                                CornerRadius="6"
+                                Background="{DynamicResource SunkenBrush}"
+                                BorderBrush="{DynamicResource EdgeBrush}"
+                                BorderThickness="1"
+                                VerticalAlignment="Center">
+                            <Path x:Name="Check"
+                                  Data="M 0 3 L 3 6 L 8 0"
+                                  Stroke="{DynamicResource InkOnAccentBrush}"
+                                  StrokeThickness="2"
+                                  StrokeEndLineCap="Round"
+                                  StrokeStartLineCap="Round"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Visibility="Collapsed" />
+                        </Border>
+                        <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Chip" Property="Background" Value="{DynamicResource BlushBrush}" />
-                            <Setter TargetName="Chip" Property="BorderBrush" Value="{DynamicResource BlushBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource BlushBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource BlushBrush}" />
+                            <Setter TargetName="Check" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Chip" Property="BorderBrush" Value="{DynamicResource BlushBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource BlushBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
