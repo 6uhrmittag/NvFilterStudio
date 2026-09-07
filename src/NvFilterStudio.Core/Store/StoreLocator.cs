@@ -152,6 +152,42 @@ public sealed class StoreLocator
         }
     }
 
+    /// <summary>
+    /// Whether a write can proceed, and what is in the way if not.
+    /// </summary>
+    /// <remarks>
+    /// The single answer for both the Apply gate and <see cref="StoreWriter"/>.
+    /// They used to disagree — the gate asked only <see cref="IsWritable"/>
+    /// while the writer also refused whenever an NVIDIA process was running — so
+    /// with the overlay off and the NVIDIA App merely open, the log was usually
+    /// unlocked, Apply enabled itself, and then the write declined.
+    /// </remarks>
+    public StoreWriteReadiness CheckWriteReadiness()
+    {
+        if (!Exists || ActiveLogPath is null)
+        {
+            return new StoreWriteReadiness(StoreWriteBlocker.StoreMissing, []);
+        }
+
+        IReadOnlyList<(string Name, int Id)> holders = FindHoldingProcesses();
+        if (holders.Count > 0)
+        {
+            // The overlay takes precedence in the message because it is the
+            // harder problem: closing the App does not release it, and killing
+            // the overlay does not either.
+            bool overlay = holders.Any(
+                h => h.Name.Contains("Overlay", StringComparison.OrdinalIgnoreCase));
+
+            return new StoreWriteReadiness(
+                overlay ? StoreWriteBlocker.OverlayRunning : StoreWriteBlocker.AppRunning,
+                holders);
+        }
+
+        return IsWritable()
+            ? StoreWriteReadiness.Ready
+            : new StoreWriteReadiness(StoreWriteBlocker.Locked, holders);
+    }
+
     /// <summary>Names and ids of running processes known to hold the store.</summary>
     public static IReadOnlyList<(string Name, int Id)> FindHoldingProcesses()
     {

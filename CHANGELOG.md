@@ -5,6 +5,15 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Apply no longer enables itself and then refuses (#33). The button asked only
+  whether the store file could be opened, while the writer also declined
+  whenever an NVIDIA process was running — so with the overlay off and the
+  NVIDIA App merely open, pressing Apply failed for a reason nothing had shown.
+  Both now share one check, and the read-only banner names the condition
+  actually in the way instead of listing every remedy at once
+
 ## [0.2.0] — 2026-09-07
 
 **Upgrade if you are on 0.1.0.** That build crashes on any store containing a

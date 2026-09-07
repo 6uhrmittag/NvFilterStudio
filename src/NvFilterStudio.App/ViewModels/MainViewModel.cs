@@ -102,10 +102,13 @@ public sealed partial class MainViewModel : ObservableObject
     private string? _loadError;
 
     /// <summary>Guidance shown while the store is held open.</summary>
-    public string BlockedHint =>
-        "Filters are read-only right now.\n" +
-        "To apply changes: NVIDIA App → Settings → Features → In-Game Overlay → off, " +
-        "then close the NVIDIA App. I'll notice on my own.";
+    /// <remarks>
+    /// Comes from the same readiness check that gates Apply, so it names the
+    /// condition actually in the way. The old text listed every remedy at once,
+    /// which meant telling someone to close an App they had already closed.
+    /// </remarks>
+    [ObservableProperty]
+    private string _blockedHint = string.Empty;
 
     /// <summary>Whether the read succeeded.</summary>
     public bool IsLoaded => _document is not null;
@@ -263,10 +266,15 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void RefreshWritability()
     {
-        bool writable = _locator.Exists && _locator.IsWritable();
-        if (writable != CanWrite)
+        // The same check StoreWriter performs. Asking only whether the log could
+        // be opened let Apply enable itself while the NVIDIA App was still open,
+        // and the write then refused for a reason the button had never shown.
+        StoreWriteReadiness readiness = _locator.CheckWriteReadiness();
+        BlockedHint = readiness.Describe();
+
+        if (readiness.CanWrite != CanWrite)
         {
-            CanWrite = writable;
+            CanWrite = readiness.CanWrite;
             ApplyCommand.NotifyCanExecuteChanged();
         }
     }

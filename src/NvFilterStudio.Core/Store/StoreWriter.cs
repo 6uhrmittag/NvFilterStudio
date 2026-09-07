@@ -75,7 +75,7 @@ public sealed class StoreWriter(StoreLocator locator)
 
         if (_locator.IsLiveStore)
         {
-            EnsureLiveStoreWritable(logPath);
+            EnsureLiveStoreWritable();
         }
 
         string? backupDirectory = skipBackup ? null : CreateVerifiedBackup(backupRoot ?? DefaultBackupRoot);
@@ -96,22 +96,15 @@ public sealed class StoreWriter(StoreLocator locator)
             logPath, backupDirectory, snapshot.NextSequence, newVersion, before, updated.Length);
     }
 
-    private void EnsureLiveStoreWritable(string logPath)
+    private void EnsureLiveStoreWritable()
     {
-        IReadOnlyList<(string Name, int Id)> holders = StoreLocator.FindHoldingProcesses();
-        if (holders.Count > 0)
-        {
-            string list = string.Join(", ", holders.Select(h => $"{h.Name} ({h.Id})"));
-            throw new StoreWriteBlockedException(
-                $"NVIDIA is still running: {list}. Turn the In-Game Overlay off in " +
-                "NVIDIA App -> Settings -> Features, then close the NVIDIA App.");
-        }
+        // Exactly the check the Apply gate uses, so a write can never be refused
+        // for a reason the button did not already know about and show.
+        StoreWriteReadiness readiness = _locator.CheckWriteReadiness();
 
-        if (!_locator.IsWritable())
+        if (!readiness.CanWrite)
         {
-            throw new StoreWriteBlockedException(
-                $"{logPath} is still locked by another process. Turn the In-Game Overlay off " +
-                "in NVIDIA App -> Settings -> Features, then close the NVIDIA App.");
+            throw new StoreWriteBlockedException(readiness.DescribeWithHolders());
         }
     }
 
