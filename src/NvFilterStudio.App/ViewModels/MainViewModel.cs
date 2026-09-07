@@ -184,6 +184,33 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     /// <summary>Re-reads the store unconditionally.</summary>
+    /// <summary>Re-reads the store while keeping the user where they were.</summary>
+    /// <remarks>
+    /// A plain reload picks the first populated slot, so applying an edit to
+    /// slot 3 left you looking at slot 1. Tuning a profile means applying over
+    /// and over, which made that a re-navigation every single time.
+    /// </remarks>
+    private void ReloadKeepingPlace()
+    {
+        string? exePath = SelectedGame?.ExePath;
+        int? slotId = SelectedSlot?.Slot.Id;
+
+        ReloadWithoutAsking();
+
+        // Only restore what still exists. The store is re-read from disk, and
+        // nothing guarantees the same game and slot are still there.
+        if (exePath is not null &&
+            Games.FirstOrDefault(g => g.ExePath == exePath) is { } game)
+        {
+            SelectedGame = game;
+        }
+
+        if (slotId is { } id && Slots.FirstOrDefault(s => s.Slot.Id == id) is { } slot)
+        {
+            SelectedSlot = slot;
+        }
+    }
+
     private void ReloadWithoutAsking()
     {
         try
@@ -569,12 +596,17 @@ public sealed partial class MainViewModel : ObservableObject
             StoreWriteResult result = new StoreWriter(_locator).Write(_document.ToJson(), _snapshot);
 
             HasUnsavedChanges = false;
-            Status = $"Applied ♡  backup saved to {result.BackupDirectory}";
 
             // The write consumed this snapshot's sequence and version, so a
             // fresh read is needed before another write. No prompt here: the
             // edits were just saved, so there is nothing to discard.
-            ReloadWithoutAsking();
+            ReloadKeepingPlace();
+
+            // Set after the reload, which writes a status of its own. Applying
+            // is the one action with no visible result - the store is not
+            // somewhere the user can go and look - so its confirmation has to
+            // survive rather than be overwritten a moment later.
+            Status = $"Applied ♡  backup saved to {result.BackupDirectory}";
         }
         catch (Exception ex) when (ex is StoreWriteBlockedException
                                       or InvalidDataException
