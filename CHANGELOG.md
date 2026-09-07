@@ -16,6 +16,8 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 - Community health files: issue forms, pull request template, code of conduct,
   security policy
 - CodeQL analysis, weekly and on every pull request
+- `nvfs.exe` console tool shipped in releases (#24). `nvfs status` reports
+  the store paths and what is holding it open
 - **Support for non-Latin-1 NVIDIA App languages** (#10). Russian, Japanese,
   Polish and similar store the document as a V8 two-byte (UTF-16LE) string;
   writing was previously refused outright, locking those users out entirely

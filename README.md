@@ -39,6 +39,11 @@ why it is around 60 MB.
 It follows your Windows light/dark setting, and the ☾ button in the corner
 switches manually.
 
+Releases also include **`nvfs.exe`**, a small console tool. `nvfs status`
+reports where your store is and whether anything is holding it open, which is
+the quickest way to answer "why is Apply greyed out" — and the most useful
+thing to paste into a bug report.
+
 ### Before you can apply changes
 
 Reading works any time — while gaming, with everything running. **Writing needs

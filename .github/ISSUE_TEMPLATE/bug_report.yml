@@ -11,6 +11,19 @@ body:
         Backups are in `%LOCALAPPDATA%\NvFilterStudio\backups\` — copy a folder
         from there over the store with the overlay off, and nothing is gone.
 
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of `nvfs status`
+      description: >
+        `nvfs.exe` ships alongside the app in every release. Running
+        `nvfs status` reports the store paths, whether it is locked and by what,
+        which answers most of what would otherwise be asked here. Paste it if
+        you can; if not, the app version from the header will do.
+      render: text
+    validations:
+      required: false
+
   - type: input
     id: version
     attributes:
