@@ -7,6 +7,11 @@
 
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <!-- LevelDB compresses table blocks with Snappy. Decompressing
+         attacker-influenced bytes is exactly where a hand-rolled
+         implementation turns a subtle bug into a security problem, so
+         this uses a well-exercised library instead. -->
+    <PackageVersion Include="Snappier" Version="1.3.1" />
   </ItemGroup>
 
   <ItemGroup Label="Testing">

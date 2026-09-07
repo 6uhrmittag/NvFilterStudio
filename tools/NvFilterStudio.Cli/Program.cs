@@ -1,4 +1,5 @@
 using System.Globalization;
+using NvFilterStudio.Core.LevelDb;
 using NvFilterStudio.Core.Model;
 using NvFilterStudio.Core.Store;
 
@@ -55,6 +56,9 @@ internal static class Program
             case "verify":
                 return Verify(locator);
 
+            case "tables":
+                return Tables(locator);
+
             case "set":
                 return Set(locator, args);
 
@@ -106,6 +110,60 @@ internal static class Program
 
     private static string Excerpt(string text, int from) =>
         text[from..Math.Min(text.Length, from + 140)];
+
+    /// <summary>Parses each .ldb table and reports what it holds.</summary>
+    private static int Tables(StoreLocator locator)
+    {
+        if (locator.TablePaths.Count == 0)
+        {
+            Console.WriteLine("no .ldb tables in this store");
+            return 0;
+        }
+
+        foreach (string path in locator.TablePaths)
+        {
+            byte[] bytes = StoreLocator.ReadPossiblyLockedFile(path);
+            Console.WriteLine($"{Path.GetFileName(path)}  {bytes.Length:N0} bytes  " +
+                              $"table={SsTable.LooksLikeTable(bytes)}");
+
+            try
+            {
+                IReadOnlyList<TableEntry> entries = [.. SsTable.ReadEntries(bytes)];
+                Console.WriteLine($"  entries: {entries.Count}");
+                Console.WriteLine($"  highest sequence: {SsTable.HighestSequence(bytes)}");
+
+                var presets = entries
+                    .Where(e => IndexedDbKey.IsFilterPresetsKey(e.UserKey.Span))
+                    .ToList();
+
+                Console.WriteLine($"  filter-preset entries: {presets.Count}");
+
+                // Highest sequence wins for a given key, and entries are stored
+                // in key order rather than sequence order, so sort explicitly.
+                foreach (TableEntry entry in presets.OrderByDescending(e => e.Sequence).Take(4))
+                {
+                    string decoded;
+                    try
+                    {
+                        decoded = $"{StoreValueCodec.Decode(entry.Value).Json.Length} json chars";
+                    }
+                    catch (InvalidDataException ex)
+                    {
+                        decoded = $"undecodable ({ex.Message})";
+                    }
+
+                    Console.WriteLine($"    seq={entry.Sequence}  key={entry.UserKey.Length}B  " +
+                                      $"value={entry.Value.Length}B  {decoded}");
+                }
+            }
+            catch (SsTableFormatException ex)
+            {
+                Console.WriteLine($"  could not parse: {ex.Message}");
+            }
+        }
+
+        return 0;
+    }
 
     private static void Status(StoreLocator locator)
     {

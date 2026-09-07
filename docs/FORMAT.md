@@ -265,6 +265,8 @@ The write lands when the overlay closes, not on slider release.
 | The write is durable | Sharpen 10 still read back after a full App + overlay restart and a game launch |
 | LevelDB is crash-safe here | Six hard kills of the overlay left all 2 740 records CRC-valid and slot 3 intact |
 | Compacted stores work | Against the real post-compaction store (`000004.log` + 975 KB `000005.ldb`): export picked the live value from the log rather than a stale table copy, import chose sequence 11 732 from `max(log 11 731, manifest 11 406)`, and the read-back changed exactly one value |
+| `.ldb` tables are parsed, not scanned | The 975 KB `000005.ldb` decodes to 11 400 entries, highest sequence 11 399, of which 89 are `filterPresets` records; the newest (seq 11 384) yields the same 9 092-character document the log holds. Blocks are a mix of uncompressed and **Snappy** — the uncompressed ones are why a plain byte scan saw JSON at all |
+| The GUI's Apply writes a real store | Driven through its own UI: slot 3 `Details.fx` Sharpen 10 → 37 → 10 over two applies, value version 48 → 49 → 50, one value changed each time and the pre-write backup decoded to the original |
 
 ## Not proven
 
@@ -279,9 +281,8 @@ The write lands when the overlay closes, not on slider release.
   confirmed in the App's UI**. The UI confirmation was done pre-compaction. The
   sequence-number reasoning says it will hold; that is not the same as having
   seen it.
-- `.ldb` tables are only ever *read as bytes*, scanned for the JSON marker. The
-  sorted-table format (index, restart points, optional Snappy compression) is
-  not parsed. A compressed or unusually laid-out table could hide a record.
+- Table *writing* is not implemented. Compaction is left entirely to LevelDB;
+  this project only ever appends to the log.
 - Writing only appends to the log; it never writes tables.
 - The two-byte string path is covered by tests but has **not** been exercised
   against a real non-Latin-1 NVIDIA App.

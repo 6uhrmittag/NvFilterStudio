@@ -49,6 +49,26 @@ public sealed class StoreReader(StoreLocator locator)
         // moved entries into tables: those carry their own sequence numbers and
         // would shadow a lower-numbered append, which fails silently.
         ulong sequence = HighestSequenceInLog(logBytes);
+
+        // Tables carry their own sequence numbers, and an entry in one outranks
+        // a lower-numbered append. The MANIFEST usually covers this, but reading
+        // the tables directly does not depend on it being accurate.
+        foreach (string tablePath in _locator.TablePaths)
+        {
+            try
+            {
+                ulong inTable = SsTable.HighestSequence(StoreLocator.ReadPossiblyLockedFile(tablePath));
+                if (inTable > sequence)
+                {
+                    sequence = inTable;
+                }
+            }
+            catch (Exception ex) when (ex is SsTableFormatException or InvalidDataException or IOException)
+            {
+                // The MANIFEST below still provides a bound.
+            }
+        }
+
         if (_locator.ManifestPath is { } manifestPath)
         {
             byte[] manifestBytes = StoreLocator.ReadPossiblyLockedFile(manifestPath);
@@ -72,9 +92,22 @@ public sealed class StoreReader(StoreLocator locator)
         foreach (string tablePath in _locator.TablePaths)
         {
             byte[] tableBytes = StoreLocator.ReadPossiblyLockedFile(tablePath);
-            if (TryScanForRecord(tableBytes, Path.GetFileName(tablePath), sequence) is { } fromTable)
+            string name = Path.GetFileName(tablePath);
+
+            // Parsing the table properly yields the key bytes, which a raw scan
+            // cannot. Without them a record can be read but never written back,
+            // so a store whose log holds no preset was editable in appearance
+            // only.
+            if (TryReadFromTable(tableBytes, name, sequence) is { } parsed)
             {
-                return fromTable;
+                return parsed;
+            }
+
+            // Falls back to scanning if the table cannot be parsed - an
+            // unimplemented compression, say. Reads still work; writes will not.
+            if (TryScanForRecord(tableBytes, name, sequence) is { } scanned)
+            {
+                return scanned;
             }
         }
 
@@ -147,13 +180,59 @@ public sealed class StoreReader(StoreLocator locator)
     }
 
     /// <summary>
+    /// Finds the newest filter-preset entry in a parsed table, with its key.
+    /// </summary>
+    private static StoreSnapshot? TryReadFromTable(
+        ReadOnlyMemory<byte> tableBytes, string source, ulong sequence)
+    {
+        try
+        {
+            TableEntry? best = null;
+
+            foreach (TableEntry entry in SsTable.ReadEntries(tableBytes))
+            {
+                if (!IndexedDbKey.IsFilterPresetsKey(entry.UserKey.Span) ||
+                    !StoreValueCodec.LooksLikePresetValue(entry.Value.Span))
+                {
+                    continue;
+                }
+
+                // Entries are stored in key order, not sequence order, so the
+                // newest has to be chosen explicitly.
+                if (best is null || entry.Sequence > best.Value.Sequence)
+                {
+                    best = entry;
+                }
+            }
+
+            if (best is not { } winner)
+            {
+                return null;
+            }
+
+            StoreValue value = StoreValueCodec.Decode(winner.Value);
+            if (!IsParseableJson(value.Json))
+            {
+                return null;
+            }
+
+            return new StoreSnapshot(
+                value.Json, value.Version, winner.UserKey.ToArray(), source, sequence + 1);
+        }
+        catch (Exception ex) when (ex is SsTableFormatException or InvalidDataException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Recovers a record from raw bytes by scanning for the JSON marker.
     /// </summary>
     /// <remarks>
-    /// Used for <c>.ldb</c> tables, whose sorted-block layout (index blocks,
-    /// restart points, optional compression) is not parsed. Records that happen
-    /// to be split across blocks or compressed are therefore invisible here —
-    /// a known limitation, and the reason the log is always preferred.
+    /// Last resort for a <c>.ldb</c> table that <see cref="TryReadFromTable"/>
+    /// could not parse — a compression this does not implement, say. It cannot
+    /// recover the key bytes, so a record found this way can be read but never
+    /// written back.
     /// </remarks>
     private static StoreSnapshot? TryScanForRecord(ReadOnlyMemory<byte> bytes, string source, ulong sequence)
     {

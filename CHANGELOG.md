@@ -7,6 +7,10 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `.ldb` sorted tables are parsed properly rather than scanned for the JSON
+  marker (#9). Blocks are Snappy-decompressed and key prefix compression is
+  undone, which recovers the **key bytes** a scan cannot — so a store whose log
+  holds no preset record is now editable, not merely readable
 - Window remembers its size, position and maximised state, and refuses to
   restore onto a display that is no longer connected (#15)
 - Accessible names on every icon-only button and slider, so a screen reader
