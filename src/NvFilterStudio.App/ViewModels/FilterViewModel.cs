@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NvFilterStudio.Core.Model;
 using NvFilterStudio.Core.Share;
@@ -34,8 +35,19 @@ public sealed partial class FilterViewModel : ObservableObject
     /// <summary>Sliders belonging to this filter.</summary>
     public ObservableCollection<ControlViewModel> Controls { get; }
 
+    /// <summary>What a screen reader announces for this filter's card.</summary>
+    /// <remarks>
+    /// Without an explicit name WPF falls back to <c>ToString()</c> on the bound
+    /// item, so the container announces the view-model's type name before every
+    /// filter in the stack. Position is included because stack order changes the
+    /// image, and it is otherwise conveyed only by a number in a coloured circle.
+    /// </remarks>
+    public string AccessibleName =>
+        string.Create(CultureInfo.CurrentCulture, $"{Name} ({Shader}), position {Order + 1}");
+
     /// <summary>Position in the stack, shown to make the ordering explicit.</summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AccessibleName))]
     private int _order;
 
     /// <summary>Whether this is the first filter, so "move up" can be disabled.</summary>

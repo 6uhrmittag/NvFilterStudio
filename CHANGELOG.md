@@ -36,6 +36,9 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Screen readers no longer announce raw view-model type names before every
+  filter and slider (#28). Item containers now name themselves
+  `Details (Details.fx), position 1` and `Sharpen, Schärfen`
 - `ToRaw` guarded a division with `uiSpan == 0`. Double equality misses the case
   that matters: a span of 1e-300 is not zero but still yields infinity
 - Log reassembly leaked its partial-fragment buffer when a log ended

@@ -40,6 +40,14 @@ public sealed partial class ControlViewModel : ObservableObject
     public string? SecondaryLabel =>
         string.Equals(Name, LocalizedName, StringComparison.OrdinalIgnoreCase) ? null : LocalizedName;
 
+    /// <summary>What a screen reader announces for this slider's row.</summary>
+    /// <remarks>
+    /// The slider itself reports its own value and range; this names the row it
+    /// sits in, which would otherwise fall back to the view-model's type name.
+    /// </remarks>
+    public string AccessibleName =>
+        SecondaryLabel is { Length: > 0 } secondary ? $"{Name}, {secondary}" : Name;
+
     public double Minimum { get; }
 
     public double Maximum { get; }
