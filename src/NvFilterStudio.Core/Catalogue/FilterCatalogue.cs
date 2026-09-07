@@ -87,16 +87,28 @@ public sealed class FilterCatalogue
         return learned;
     }
 
-    /// <summary>Learns one definition. Existing entries are kept.</summary>
+    /// <summary>Learns one definition from the store, replacing any cached one.</summary>
+    /// <remarks>
+    /// The store is authoritative and a learned definition is only a cache of
+    /// it, so a definition read from the document always wins. Keeping the first
+    /// sighting instead meant a definition could never be corrected: a control
+    /// whose bounds changed with a driver update, or a name learned from a bad
+    /// record, was stuck permanently. Since the overlay honours whatever bounds
+    /// it is given (#12), a stale definition produces a wrong filter rather than
+    /// a corrected one, and nothing about it looks wrong.
+    /// </remarks>
+    /// <returns>True when this taught the catalogue something it did not have.</returns>
     public bool Learn(FilterEntry filter)
     {
         ArgumentNullException.ThrowIfNull(filter);
 
         string shader = filter.Shader;
-        if (string.IsNullOrEmpty(shader) || _entries.ContainsKey(shader))
+        if (string.IsNullOrEmpty(shader))
         {
             return false;
         }
+
+        bool isNew = !_entries.ContainsKey(shader);
 
         JsonObject skeleton = filter.DetachClone();
 
@@ -113,7 +125,10 @@ public sealed class FilterCatalogue
         template.IsSelected = true;
 
         _entries[shader] = new CatalogueEntry(shader, Share.FilterNames.ForShader(shader), skeleton);
-        return true;
+
+        // Only a genuinely new shader counts, so callers do not rewrite the
+        // cache file on every read just because definitions were refreshed.
+        return isNew;
     }
 
     /// <summary>Loads previously learned definitions, ignoring a missing or damaged cache.</summary>

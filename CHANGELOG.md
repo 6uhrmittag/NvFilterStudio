@@ -40,6 +40,10 @@ and [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Filter definitions learned from the store now refresh a cached one instead of
+  keeping the first sighting forever (#31). A definition could otherwise never
+  be corrected — and since the overlay honours whatever bounds it is given, a
+  stale one produces a wrong filter rather than a corrected one
 - **Boolean controls no longer crash the reader or get corrupted on write.**
   Filters such as `BeautifyDOF.fx` carry on/off controls that store a JSON
   `true` and none of the numeric fields; reading one as a double threw and took
