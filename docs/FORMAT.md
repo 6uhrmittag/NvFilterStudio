@@ -82,6 +82,16 @@ Each slot holds `filterStack.filters[]`:
   normalised float the shader receives. Measured relation:
   `currentValue = (maxValue - minValue) * (uiValue - uiMinValue) / (uiMaxValue - uiMinValue) + minValue`.
   Read the bounds from the control rather than assuming ±100.
+- **Not every control is a slider.** `controlType` is `slider` or `boolean`. A
+  boolean stores `currentValue` as a JSON `true`/`false`, and carries *none* of
+  the numeric fields — no `minValue`, `maxValue`, `stepSize`, `uiMinValue`,
+  `uiMaxValue`, `uiStepSize`, `currentUIValue` or `defaultValue`. Reading one as
+  a number throws; writing one through the numeric path destroys it.
+- **`dataType` is `float`, `int` or `bool`.** `int` controls (`Letterbox.fx`,
+  `Painterly.fx`) still follow the generic bounds mapping — their raw and UI
+  scales are simply identical, so the conversion is an identity.
+- **A boolean control has no recorded default**, so there is nothing to reset it
+  to.
 - **The control metadata is authoritative — the overlay does not re-derive it.**
   A filter written into a slot with deliberately wrong bounds (`minValue 0`,
   `maxValue 5`, `uiMinValue -50`, `uiMaxValue 250`, `uiStepSize 7`) rendered
@@ -107,9 +117,30 @@ Each slot holds `filterStack.filters[]`:
 | Shader | UI name | Control ids |
 |---|---|---|
 | `Adjustments.fx` | Brightness/Contrast | 0 Exposure, 1 Contrast, 2 Highlights, 3 Shadows, 4 Gamma |
+| `BeautifyDOF.fx` | Auto Depth of Field | 0 Speed, 1 Intensity, 2 InvertZAxis*, 3 InvertYAxis* |
+| `BlacknWhite.fx` | Black and White | 0 Intensity, 1 EnableDepth*, 2 EdgeDistance, 3 InvertZAxis*, 4 InvertYAxis* |
 | `Color.fx` | Color | 0 Tint Color, 1 Tint Intensity, 2 Temperature, 3 Vibrance |
-| `Details.fx` | Details | 0 Sharpen, 1 Clarity, 2 HDR Toning, 3 Bloom |
 | `Colorblind.fx` | Color Blind Mode | 0 Protanopia, 1 Deuteranopia, 2 Tritanopia |
+| `DOF.fx` | Depth of Field | 0 FocusDepth, 1 FarBlurCurve, 2 NearBlurCurve, 3 BlurRadius, 4 InvertZAxis*, 5 InvertYAxis* |
+| `Details.fx` | Details | 0 Sharpen, 1 Clarity, 2 HDR Toning, 3 Bloom |
+| `Letterbox.fx` | Letterbox | 0 HorizontalScale†, 1 VerticalScale† |
+| `NightMode.fx` | Night Mode | 0 Intensity |
+| `NvNewSharpen.fx` | Sharpen+ | 0 Intensity, 1 TextureDetail |
+| `NvTiltShift.fx` | Tilt-Shift | 0 Axis, 1 BlurSize, 2 BlurCurve |
+| `NvVignette.fx` | Vignette | 0 Intensity |
+| `OldFilm.fx` | Old Film | 0 Gamma, 1 Exposure, 2 Contrast, 3 VignetteStrength, 4 FilterStrength, 5 GrimeStrength |
+| `Painterly.fx` | Painterly | 0 Iterations†, 1 SampleDirections†, 2 Radius†, 3 EdgeSharpness |
+| `Sharpen.fx` | Sharpen | 0 Intensity, 1 IgnoreFilmGrain |
+| `SpecialFX.fx` | Special FX | 0 Retro, 1 Sketch, 2 Halftone, 3 Sepia |
+| `Splitscreen.fx` | Splitscreen | 0 SplitAndCompare*, 1 Position, 2 Rotation, 3 DividerWidth, 4 DividerColor, 5 GradientFade*, 6 Zoom |
+| `Watercolor.fx` | Watercolor | 0 Gamma, 1 Exposure, 2 Contrast, 3 Saturation, 4 TintIntensity, 5 PencilIntensity, 6 PencilBlur, 7 PencilSoftness, 8 ColorDetail, 9 ColorBlur |
+
+`*` boolean control &nbsp; `†` `dataType: int`
+
+Eighteen filters, 73 controls, harvested by adding every filter the
+overlay offers into one slot and reading the store back. Ids and counts
+are observed; the English names are translations of the German labels on
+the test machine, not text from an English NVIDIA App.
 
 Other shaders exist (`Letterbox.fx`, `NightMode.fx`, `SpecialFX.fx`,
 `Watercolor.fx`, `Painterly.fx`, `Splitscreen.fx`) — their control ids have not
@@ -299,7 +330,13 @@ The write lands when the overlay closes, not on slider release.
 - Writing only appends to the log; it never writes tables.
 - The two-byte string path is covered by tests but has **not** been exercised
   against a real non-Latin-1 NVIDIA App.
-- Only `Adjustments`, `Color`, `Details` and `Colorblind` control ids are mapped.
+- The English control names are translations of German labels, not text seen in
+  an English NVIDIA App. Ids and counts are observed; the wording is not.
+- Whether the overlay would supply its own localised `displayName` if a written
+  filter node omitted one. The `.acef` effects carry the label in some fifteen
+  languages, so it plausibly can — but #12 proved it honours a `displayName`
+  that *is* present, and omitting one has never been tried. This decides whether
+  a shipped filter catalogue can be language-neutral.
 - One machine, one driver, one App version (see *Verified on*).
 
 ## Ruled out
