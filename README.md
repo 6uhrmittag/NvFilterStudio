@@ -90,6 +90,7 @@ It writes to one key in NVIDIA's own settings database, and:
 - refuses to write while NVIDIA is running, rather than writing into the void
 - never touches a game process, so it has nothing to do with anti-cheat
 - keeps your NVIDIA account id out of every export
+- works whatever language your NVIDIA App is in
 
 Backups live in `%LOCALAPPDATA%\NvFilterStudio\backups`.
 
@@ -106,7 +107,7 @@ assumed — is documented in **[docs/FORMAT.md](docs/FORMAT.md)**.
 ## Building
 
 ```powershell
-dotnet test                 # 101 tests, no NVIDIA install needed
+dotnet test                 # 110 tests, no NVIDIA install needed
 dotnet run --project tools/NvFilterStudio.Cli -- show
 dotnet build -c Release
 ```

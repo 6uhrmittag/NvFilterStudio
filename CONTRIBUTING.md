@@ -38,7 +38,7 @@ Names should match the English NVIDIA App labels, without spaces —
 ## Building
 
 ```powershell
-dotnet test          # 101 tests, no NVIDIA install required
+dotnet test          # 110 tests, no NVIDIA install required
 dotnet build
 dotnet run --project tools/NvFilterStudio.Cli -- status
 ```

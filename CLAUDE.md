@@ -28,7 +28,7 @@ implementation lives at
 | `src/NvFilterStudio.Core` | The whole store format. **No UI dependency.** All tests target this. |
 | `src/NvFilterStudio.App` | WPF app, MVVM via CommunityToolkit.Mvvm |
 | `tools/NvFilterStudio.Cli` | Console harness — the fastest way to check something against a real store |
-| `tests/NvFilterStudio.Core.Tests` | xUnit. 101 tests, no NVIDIA install needed |
+| `tests/NvFilterStudio.Core.Tests` | xUnit. 110 tests, no NVIDIA install needed |
 
 ## Commands
 
@@ -154,6 +154,7 @@ code beneath it is tested and the same operation is proven via the PowerShell
 tools, but the button itself is unexercised.
 
 Other things deliberately not claimed: never tested across a real driver update
-(#11), only 4 of 10 filter shaders have named sliders (#6), and writing is
-Latin-1 only (#10). Keep that separation honest — `docs/FORMAT.md` and the issue
+(#11), only 4 of 10 filter shaders have named sliders (#6), and the two-byte
+string path has never met a real non-Latin-1 NVIDIA App. Keep that separation
+honest — `docs/FORMAT.md` and the issue
 list are where uncertainty is recorded rather than smoothed over.

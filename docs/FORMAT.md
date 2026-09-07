@@ -132,8 +132,16 @@ structured-clone v21 header, `FF 0F 22` a nested v15 **one-byte (Latin-1)**
 string tag.
 
 - Non-ASCII is stored **raw and unescaped** — `Schärfen` carries byte `0xE4`.
-- Because the tag is one-byte, any character above U+00FF would require V8's
-  two-byte tag `0x63`. Not implemented; the importer refuses rather than mangle.
+- A document containing any character above U+00FF cannot use the one-byte tag.
+  V8 then uses **`0x63`**, where the payload is UTF-16LE. This is what an NVIDIA
+  App in Russian, Japanese, Polish and similar produces.
+- **The varint is a length in bytes for both forms**, so a two-byte string
+  reports twice its character count. Reading it as characters truncates the
+  document.
+
+The tag must be read rather than assumed. A two-byte document scanned as Latin-1
+does not merely decode oddly — the marker is not found at all, so the store
+looks empty rather than differently encoded.
 
 **IndexedDB key** `FilterPresets_v1`: `00 03 0D 01` (KeyPrefix — db 3, object
 store 13, index 1) + `01` (string type) + `10` (16 chars) + the name in
@@ -274,7 +282,9 @@ The write lands when the overlay closes, not on slider release.
 - `.ldb` tables are only ever *read as bytes*, scanned for the JSON marker. The
   sorted-table format (index, restart points, optional Snappy compression) is
   not parsed. A compressed or unusually laid-out table could hide a record.
-- Writing is Latin-1 only, and only appends to the log — it never writes tables.
+- Writing only appends to the log; it never writes tables.
+- The two-byte string path is covered by tests but has **not** been exercised
+  against a real non-Latin-1 NVIDIA App.
 - Only `Adjustments`, `Color`, `Details` and `Colorblind` control ids are mapped.
 - One machine, one driver, one App version (see *Verified on*).
 

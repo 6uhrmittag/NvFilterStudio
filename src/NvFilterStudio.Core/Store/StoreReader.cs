@@ -157,19 +157,26 @@ public sealed class StoreReader(StoreLocator locator)
     /// </remarks>
     private static StoreSnapshot? TryScanForRecord(ReadOnlyMemory<byte> bytes, string source, ulong sequence)
     {
-        string text = Encoding.Latin1.GetString(bytes.Span);
-
-        foreach (int offset in JsonBraceScanner.FindAll(text, StoreValueCodec.JsonMarker).Reverse())
+        // Both V8 string forms have to be searched. A store written by an NVIDIA
+        // App in a language needing characters above U+00FF holds the document
+        // as UTF-16LE, and a Latin-1 scan would simply not find it - reporting
+        // "no presets" rather than "stored differently".
+        foreach (Encoding encoding in (Encoding[])[Encoding.Latin1, Encoding.Unicode])
         {
-            string? candidate = JsonBraceScanner.ExtractObject(text, offset);
-            if (candidate is null || !IsParseableJson(candidate))
-            {
-                continue;
-            }
+            string text = encoding.GetString(bytes.Span);
 
-            // Key bytes are unavailable from a raw scan; the caller must have a
-            // log-sourced key to write. Reads still work.
-            return new StoreSnapshot(candidate, 0, [], source, sequence + 1);
+            foreach (int offset in JsonBraceScanner.FindAll(text, StoreValueCodec.JsonMarker).Reverse())
+            {
+                string? candidate = JsonBraceScanner.ExtractObject(text, offset);
+                if (candidate is null || !IsParseableJson(candidate))
+                {
+                    continue;
+                }
+
+                // Key bytes are unavailable from a raw scan; the caller must have
+                // a log-sourced key to write. Reads still work.
+                return new StoreSnapshot(candidate, 0, [], source, sequence + 1);
+            }
         }
 
         return null;
