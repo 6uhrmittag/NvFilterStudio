@@ -71,6 +71,23 @@ jobs:
           path: artifacts/test-results
           if-no-files-found: warn
 
+      - name: Code coverage summary
+        # The Cobertura XML from --collect:"XPlat Code Coverage" above was
+        # already being paid for and uploaded, but nothing ever read it -
+        # visible only by downloading the artifact and opening the XML by
+        # hand. This turns it into a markdown table on the job summary page
+        # instead, so a run's coverage is visible without leaving the browser.
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: artifacts/test-results/**/coverage.cobertura.xml
+          badge: true
+          format: markdown
+          output: file
+
+      - name: Add coverage to job summary
+        shell: bash
+        run: cat code-coverage-results.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Publish single-file executable
         # No trimming: WPF does not trim cleanly, and a broken published build
         # is worse than a larger one. Compression is the safe win instead -
