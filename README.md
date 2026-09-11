@@ -4,11 +4,34 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-FFB7C5.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/6uhrmittag/NvFilterStudio?include_prereleases&color=C8B6E2)](https://github.com/6uhrmittag/NvFilterStudio/releases)
 
+> ### Read this first
+>
+> This is **alpha software from a hobby project**, and I would rather you knew
+> that before the pitch below:
+>
+> - **It exists because I had one problem, once.** I wanted to export my game
+>   filters and import them again later. It did that for me. I do not use it
+>   much beyond that, and I am not planning a roadmap.
+> - **It is 100 % for fun and about 99 % written by AI coding agents.** I do
+>   not know C#. Claude wrote the code, and the co-author trailers in the commit
+>   history say so; I decide what to build, test it on my own machine and decide
+>   what ships. Without those tools this project would not exist.
+> - **Treat it accordingly.** As far as I know it has only ever run against one
+>   machine's store, mine. It has never been tested across a real driver update
+>   ([#11](https://github.com/6uhrmittag/NvFilterStudio/issues/11)), which is
+>   the scenario it was built for. [docs/FORMAT.md](docs/FORMAT.md) keeps what
+>   is proven separate from what is assumed. It takes a backup before every
+>   write and checks that the backup decodes, so read
+>   [Is this safe?](#is-this-safe) and then decide for yourself.
+>
+> If that puts you off, fair. If not, welcome — bug reports and filter-name
+> corrections are exactly what it needs.
+
 Back up, edit and share your **NVIDIA game filters**.
 
 The NVIDIA App has no export or import for game filter (Freestyle) presets, and
 a driver update can wipe them. Tune a look you love, lose it, and there is no
-way to get it back — or to send it to a friend. This fixes that.
+way to get it back — or to send it to a friend. This is my attempt to fix that.
 
 > ⚠️ **Not affiliated with NVIDIA.** Independent tool, MIT licensed.
 
