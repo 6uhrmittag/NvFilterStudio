@@ -89,6 +89,25 @@ Fork runs get a read-only token and no secrets, which is why they can be
 enabled without review. The release job only runs on `v*` tags in this
 repository.
 
+## How this project is written and reviewed
+
+The README says it up front, and it applies here too: the owner does not know
+C#, and nearly all of the code was written by AI coding agents (Claude Code)
+steered by the owner, who decides what to build, tests it on their own machine
+and decides what ships. The co-author trailers in the history are the record.
+
+For a pull request that means:
+
+- **CI is the gatekeeper, not a maintainer's eye for C#.** Warnings are errors,
+  `dotnet format` must pass and the tests must be green, because that is what
+  the review can lean on. A test that pins your change is worth more than a
+  paragraph explaining it.
+- **Review comments are drafted with AI assistance and decided by the owner.**
+  If a comment is wrong, say so plainly. It will be checked, not defended.
+- **Say what you observed, not only what you changed.** Which NVIDIA App
+  version, which UI language, what `nvfs show` printed. Observed facts are what
+  keep `docs/FORMAT.md` honest, and they are the one thing no agent can supply.
+
 ## Ground rules
 
 - **Never commit real store data.** A live LevelDB log contains the machine
@@ -106,9 +125,8 @@ repository.
 ## Things known to be missing
 
 - Never tested across a real driver update, which is the case the tool exists
-  for. The shader-path rewrite branch has therefore never run.
-- Writing supports Latin-1 UI languages only; a Cyrillic or CJK install needs
-  V8's two-byte string tag, which is not implemented (the app refuses rather
-  than corrupting names).
-- `.ldb` tables are scanned as bytes, not parsed, so a compressed table could
-  hide a record.
+  for. The shader-path rewrite branch has therefore never run
+  ([#11](https://github.com/6uhrmittag/NvFilterStudio/issues/11)).
+- Writing a store from a non-Latin-1 UI language (Cyrillic, CJK) uses V8's
+  two-byte string tag. That path is unit-tested, but it has never met a real
+  NVIDIA App in one of those languages.
