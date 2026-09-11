@@ -56,13 +56,38 @@ name of its own.
 ## Building
 
 ```powershell
-dotnet test          # 187 tests, no NVIDIA install required
+dotnet test          # 202 tests, no NVIDIA install required
 dotnet build
 dotnet run --project tools/NvFilterStudio.Cli -- status
 ```
 
 Tests build their fixtures in code and never touch a real store, so they run
 anywhere.
+
+## CI on your pull request
+
+Every pull request runs the same workflow as `master`: build,
+`dotnet format --verify-no-changes`, the test suite, a full publish of both
+executables, and a CodeQL scan. Runs from forks start automatically for
+established GitHub accounts; a brand-new account needs a maintainer to approve
+its first run.
+
+The published binaries are attached to the run as artifacts, so you can download
+and try the exact `.exe` built from your branch: open the run from the PR's
+Checks tab and scroll to **Artifacts** — `NvFilterStudio-win-x64` is the app,
+`nvfs-cli-win-x64` the CLI. You need to be signed in to download them.
+
+A draft PR runs CI too, so open one early if you want the runner's opinion
+while you work.
+
+To run CI on your fork before opening a PR: enable Actions on the fork (the
+Actions tab asks once), then **Actions → CI → Run workflow** and pick your
+branch. Pushing a branch alone does not trigger it — the `push` trigger only
+fires on `master`.
+
+Fork runs get a read-only token and no secrets, which is why they can be
+enabled without review. The release job only runs on `v*` tags in this
+repository.
 
 ## Ground rules
 
