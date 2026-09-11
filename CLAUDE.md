@@ -28,7 +28,7 @@ implementation lives at
 | `src/NvFilterStudio.Core` | The whole store format. **No UI dependency.** All tests target this. |
 | `src/NvFilterStudio.App` | WPF app, MVVM via CommunityToolkit.Mvvm |
 | `tools/NvFilterStudio.Cli` | Console harness — the fastest way to check something against a real store |
-| `tests/NvFilterStudio.Core.Tests` | xUnit. 187 tests, no NVIDIA install needed |
+| `tests/NvFilterStudio.Core.Tests` | xUnit. 202 tests, no NVIDIA install needed |
 
 ## Commands
 
@@ -148,13 +148,30 @@ green check.
 
 ## Honest state
 
-`v0.1.0` is a **pre-release**, and the reason is recorded in the release notes:
-the GUI's **Apply** button has never written to a real store (issue #18). The
-code beneath it is tested and the same operation is proven via the PowerShell
-tools, but the button itself is unexercised.
+Every release so far is a **pre-release**, and the README opens with a
+"Read this first" callout saying why: a hobby project with one user, written
+almost entirely by AI coding agents steered by an owner who does not know C#.
+Keep that callout true when the facts change.
 
-Other things deliberately not claimed: never tested across a real driver update
-(#11), only 4 of 10 filter shaders have named sliders (#6), and the two-byte
-string path has never met a real non-Latin-1 NVIDIA App. Keep that separation
-honest — `docs/FORMAT.md` and the issue
-list are where uncertainty is recorded rather than smoothed over.
+What is proven, and where:
+
+- The GUI **Apply** button has written to a real store, twice, driven through
+  its own UI, and the pre-write backup decoded to the exact prior document
+  (#18, closed). Still only ever on one machine.
+- All 18 filters and 73 controls are mapped (#6, closed), but the English
+  names are translations of German labels, not text seen in an English NVIDIA
+  App. `CONTRIBUTING.md` asks for corrections.
+- `.ldb` tables are parsed, Snappy-compressed blocks included, with the byte
+  scan kept as a fallback (#9, closed).
+- Two-byte (UTF-16LE) string writing exists and is unit-tested (#10, closed).
+
+What is deliberately not claimed:
+
+- Never tested across a real driver update (#11), which is the scenario the
+  tool exists for. The shader-path rewrite branch has never executed.
+- The two-byte write path has never met a real non-Latin-1 NVIDIA App.
+
+Keep that separation honest: `docs/FORMAT.md` and the issue list are where
+uncertainty is recorded rather than smoothed over. When one of those issues
+closes, update this section, `CONTRIBUTING.md` "Things known to be missing"
+and the README callout in the same PR.
