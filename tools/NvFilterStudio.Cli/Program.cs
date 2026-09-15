@@ -2,6 +2,7 @@ using System.Globalization;
 using NvFilterStudio.Core;
 using NvFilterStudio.Core.LevelDb;
 using NvFilterStudio.Core.Model;
+using NvFilterStudio.Core.Share;
 using NvFilterStudio.Core.Store;
 
 namespace NvFilterStudio.Cli;
@@ -60,12 +61,16 @@ internal static class Program
             case "tables":
                 return Tables(locator);
 
+            case "export":
+                return Export(locator, args);
+
             case "set":
                 return Set(locator, args);
 
             default:
                 Console.Error.WriteLine(
-                    "usage: nvfs [show|status|dump|set] [--store <dir>]\n" +
+                    "usage: nvfs [show|status|dump|verify|tables|export|set] [--store <dir>]\n" +
+                    "       nvfs export [--out <file>] [--game <substring>]\n" +
                     "       nvfs set --game <name> --slot <n> --shader <X.fx> --control <id> --value <ui>");
                 return 2;
         }
@@ -226,6 +231,42 @@ internal static class Program
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Writes the same export file the app's Ctrl+E produces.
+    /// </summary>
+    /// <remarks>
+    /// Exists so the before/after pair around a driver update (issue #11) can be
+    /// produced without a save dialog and diffed. Same
+    /// <see cref="ExportDocument"/> path as the app, so the file is exactly what
+    /// a user would have saved; the only difference is the tool name in
+    /// <c>source</c>.
+    /// </remarks>
+    private static int Export(StoreLocator locator, string[] args)
+    {
+        StoreSnapshot snapshot = new StoreReader(locator).Read();
+        FilterPresetDocument document = FilterPresetDocument.Parse(snapshot.Json);
+
+        var source = new Dictionary<string, string>
+        {
+            ["tool"] = "NvFilterStudio.Cli",
+            ["storePath"] = locator.Directory,
+            ["recordSource"] = snapshot.SourceFile,
+        };
+
+        string json = ExportDocument.Create(document, ValueOf(args, "--game"), source);
+
+        string? outPath = ValueOf(args, "--out");
+        if (outPath is null)
+        {
+            Console.WriteLine(json);
+            return 0;
+        }
+
+        File.WriteAllText(outPath, json);
+        Console.WriteLine($"exported {json.Length} chars from {snapshot.SourceFile} to {outPath}");
+        return 0;
     }
 
     private static int Set(StoreLocator locator, string[] args)
